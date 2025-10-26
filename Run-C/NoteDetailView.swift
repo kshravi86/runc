@@ -17,48 +17,34 @@ struct NoteDetailView: View {
     }
     
     var body: some View {
-        NavigationView {
-            VStack(spacing: 0) {
-                TextField("Title", text: $title)
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                    .padding()
-                    .background(Color.white) // White background for TextField
-                
-                TextEditor(text: $content)
-                    .padding()
-                    .background(Color.white) // White background for TextEditor
-            }
-            .navigationTitle(note == nil ? "New Note" : "Edit Note")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Save") {
-                        saveNote()
-                        dismiss()
-                    }
-                    .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+        VStack(spacing: 0) {
+            TextField("Title", text: $title)
+                .font(.title2)
+                .fontWeight(.semibold)
+                .padding()
+                .background(Color(UIColor.secondarySystemBackground)) // Use system background for cleaner look
+            
+            TextEditor(text: $content)
+                .padding()
+                .background(Color(UIColor.systemBackground)) // Use system background
+        }
+        .navigationTitle(note == nil ? "New Note" : "Edit Note")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button("Cancel") {
+                    dismiss()
                 }
             }
-            .tint(.blue) // Set accent color for buttons
-            .onAppear {
-                // Customize navigation bar appearance for this view
-                let appearance = UINavigationBarAppearance()
-                appearance.configureWithOpaqueBackground()
-                appearance.backgroundColor = UIColor.systemBlue // Blue background
-                appearance.titleTextAttributes = [.foregroundColor: UIColor.white] // White title
-                appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white] // White large title
-                
-                UINavigationBar.appearance().standardAppearance = appearance
-                UINavigationBar.appearance().scrollEdgeAppearance = appearance
-                UINavigationBar.appearance().compactAppearance = appearance
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    saveNote()
+                    dismiss()
+                }
+                .disabled(title.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
             }
         }
+        .tint(.blue) // Set accent color for buttons
     }
     
     private func saveNote() {

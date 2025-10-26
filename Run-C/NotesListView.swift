@@ -53,18 +53,6 @@ struct NotesListView: View {
             }
         }
         .tint(.blue) // Set accent color for navigation links and buttons
-        .onAppear {
-            // Customize navigation bar appearance
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.systemBlue // Blue background
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.white] // White title
-            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white] // White large title
-            
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
-            UINavigationBar.appearance().compactAppearance = appearance
-        }
         .sheet(isPresented: $showingAddNote) {
             NoteDetailView(note: nil)
         }

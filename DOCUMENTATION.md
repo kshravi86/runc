@@ -33,8 +33,8 @@ graph TD
     A[NotesAppApp] --> B(ContentView)
     B --> C{NavigationStack}
     C --> D[NotesListView]
-    D --> E[NoteDetailView (Add/Edit Note)]
-    D --> F[CEditorView (C Sandbox)]
+    D --> E[NoteDetailView]
+    D --> F[CEditorView]
 ```
 
 ---
