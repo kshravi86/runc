@@ -110,7 +110,7 @@ struct CodeEditorView: UIViewRepresentable {
         textView.autocapitalizationType = .none
         textView.autocorrectionType = .no
         textView.isScrollEnabled = true
-        textView.backgroundColor = .white // White background for code editor
+        textView.backgroundColor = .systemBackground // System-adaptive background for code editor
         textView.layer.cornerRadius = 8
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 12, right: 8)
         textView.attributedText = CSyntaxHighlighter.highlight(text: text)
@@ -199,18 +199,7 @@ struct CEditorView: View {
             }
         }
         .tint(.blue) // Set accent color for buttons
-        .onAppear {
-            // Customize navigation bar appearance for this view
-            let appearance = UINavigationBarAppearance()
-            appearance.configureWithOpaqueBackground()
-            appearance.backgroundColor = UIColor.systemBlue // Blue background
-            appearance.titleTextAttributes = [.foregroundColor: UIColor.white] // White title
-            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white] // White large title
-            
-            UINavigationBar.appearance().standardAppearance = appearance
-            UINavigationBar.appearance().scrollEdgeAppearance = appearance
-            UINavigationBar.appearance().compactAppearance = appearance
-        }
+        .background(Color(.systemGroupedBackground)) // Use system-adaptive background for a sleek look
         .animation(.default, value: warnings)
         .animation(.default, value: errorMessage)
     }
@@ -233,7 +222,7 @@ struct CEditorView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white) // White background for header
+        .background(Color(.systemBackground)) // System-adaptive background for header
     }
 
     private var consoleView: some View {
@@ -254,7 +243,7 @@ struct CEditorView: View {
                     .font(.system(.body, design: .monospaced))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
-                    .background(Color.white) // White background for console output
+                    .background(Color(.secondarySystemBackground)) // Use secondary system background for console output
                     .cornerRadius(8)
             }
 
@@ -272,7 +261,7 @@ struct CEditorView: View {
             }
         }
         .padding()
-        .background(Color.white) // White background for console view
+        .background(Color(.systemBackground)) // System-adaptive background for console view
     }
 
     private var outputText: String {

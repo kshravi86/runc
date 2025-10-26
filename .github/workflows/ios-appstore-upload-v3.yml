@@ -20,6 +20,9 @@ jobs:
       KEYCHAIN_PASSWORD: ${{ secrets.KEYCHAIN_PASSWORD }}
       PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
       IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+      PROJECT_PATH: Run-C.xcodeproj
+      SCHEME_NAME: Run-C
+      APP_NAME_FALLBACK: Run-C
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}
       APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
@@ -38,31 +41,6 @@ jobs:
     - name: Show Xcode version
       run: xcodebuild -version
 
-    - name: Generate App Icons (blue-white star)
-      run: |
-        chmod +x scripts/generate_app_icon.swift
-        swift scripts/generate_app_icon.swift
-
-    - name: Build Swiss Ephemeris static library
-      run: |
-        set -euo pipefail
-        SRC_DIR="ThirdParty/SwissEph/src"
-        mkdir -p ThirdParty/SwissEph/lib
-        pushd "$SRC_DIR" >/dev/null
-        SDK=$(xcrun --sdk iphoneos --show-sdk-path)
-        CC=$(xcrun --sdk iphoneos -f clang)
-        CFLAGS="-arch arm64 -isysroot $SDK -O2 -fembed-bitcode -I."
-        OBJS=()
-        for c in swe*.c swem*.c sweh*.c; do
-          # exclude test program if present
-          if [ "$c" = "swetest.c" ]; then continue; fi
-          echo "Compiling $c"; "$CC" $CFLAGS -c "$c" -o "${c%.c}.o"
-          OBJS+=("${c%.c}.o")
-        done
-        echo "Creating libswe.a"; libtool -static -o libswe.a "${OBJS[@]}"
-        mv libswe.a ../lib/
-        popd >/dev/null
-
     - name: Compute unique build number
       run: |
         NEW_BUILD=$(date +%Y%m%d%H%M)
@@ -75,7 +53,11 @@ jobs:
         echo "Environment: ${{ inputs.environment }}"
         check "${BUILD_CERTIFICATE_BASE64}" "BUILD_CERTIFICATE_BASE64"
         check "${P12_PASSWORD}" "P12_PASSWORD"
-        check "${KEYCHAIN_PASSWORD}" "KEYCHAIN_PASSWORD"
+        if [ -z "${KEYCHAIN_PASSWORD}" ]; then
+          echo "::notice title=KEYCHAIN_PASSWORD::Secret not set; workflow will generate a temporary password"
+        else
+          echo "KEYCHAIN_PASSWORD: present"
+        fi
         check "${PROVISIONING_PROFILE_BASE64}" "PROVISIONING_PROFILE_BASE64"
         if [ -n "${APP_STORE_CONNECT_API_KEY_ID}" ] && [ -n "${APP_STORE_CONNECT_ISSUER_ID}" ] && [ -n "${APP_STORE_CONNECT_API_PRIVATE_KEY}" ]; then
           echo "App Store Connect API secrets: present (will upload to TestFlight via API key)"
@@ -94,6 +76,16 @@ jobs:
         APP_STORE_CONNECT_API_PRIVATE_KEY: ${{ secrets.APP_STORE_CONNECT_API_PRIVATE_KEY }}
         APP_STORE_CONNECT_USERNAME: ${{ secrets.APP_STORE_CONNECT_USERNAME }}
         APP_SPECIFIC_PASSWORD: ${{ secrets.APP_SPECIFIC_PASSWORD }}
+
+    - name: Ensure keychain password
+      run: |
+        if [ -z "${KEYCHAIN_PASSWORD:-}" ]; then
+          KEYCHAIN_PASSWORD=$(uuidgen | tr -d '-')
+          echo "::notice title=Keychain password::KEYCHAIN_PASSWORD secret missing; using ephemeral value for this run"
+        else
+          echo "KEYCHAIN_PASSWORD provided via secrets."
+        fi
+        echo "KEYCHAIN_PASSWORD=$KEYCHAIN_PASSWORD" >> $GITHUB_ENV
 
     - name: Install Apple Certificate
       run: |
@@ -143,22 +135,25 @@ jobs:
 
     - name: Build and Archive (Release - signed)
       run: |
+        set -euo pipefail
+        ARCHIVE_PATH="${ARCHIVE_PATH:-$RUNNER_TEMP/Run-C-Release.xcarchive}"
+        PROFILE_SPECIFIER="${PP_NAME:-$PP_UUID}"
         xcodebuild archive \
-          -project NotesApp.xcodeproj \
-          -scheme NotesApp \
+          -project "$PROJECT_PATH" \
+          -scheme "$SCHEME_NAME" \
           -configuration Release \
           -destination 'generic/platform=iOS' \
-          -archivePath ${{ runner.temp }}/NotesApp-Release.xcarchive \
+          -archivePath "$ARCHIVE_PATH" \
           CODE_SIGN_STYLE=Manual \
-          CODE_SIGN_IDENTITY="" \
-          PROVISIONING_PROFILE_SPECIFIER="${{ env.PP_UUID }}" \
-          DEVELOPMENT_TEAM="${{ env.IOS_TEAM_ID }}" \
+          CODE_SIGN_IDENTITY="${SIGNING_CERT:-Apple Distribution}" \
+          PROVISIONING_PROFILE_SPECIFIER="$PROFILE_SPECIFIER" \
+          DEVELOPMENT_TEAM="${IOS_TEAM_ID}" \
           CURRENT_PROJECT_VERSION=$NEW_BUILD
-        echo "ARCHIVE_PATH=${{ runner.temp }}/NotesApp-Release.xcarchive" >> $GITHUB_ENV
+        echo "ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
 
     - name: Extract App Metadata (version/build/bundle)
       run: |
-        ARCHIVE_PATH="${ARCHIVE_PATH:-${{ runner.temp }}/NotesApp-Release.xcarchive}"
+        ARCHIVE_PATH="${ARCHIVE_PATH:-$RUNNER_TEMP/Run-C-Release.xcarchive}"
         APP_PATH=$(find "$ARCHIVE_PATH/Products/Applications" -maxdepth 1 -type d -name "*.app" -print -quit)
         if [ -z "$APP_PATH" ]; then echo "::error title=App bundle not found::No .app inside $ARCHIVE_PATH"; exit 1; fi
         PLIST="$APP_PATH/Info.plist"
@@ -166,9 +161,9 @@ jobs:
         APP_VERSION=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$PLIST")
         APP_BUILD=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$PLIST")
         BUNDLE_ID=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$PLIST")
-        APP_NAME=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$PLIST")
+        APP_NAME=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleDisplayName' "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c 'Print :CFBundleName' "$PLIST" 2>/dev/null || echo "$APP_NAME_FALLBACK")
         # sanitize for artifact name
-        SAFE_APP_NAME=$(echo "${APP_NAME:-QuizApp}" | tr ' ' '-' | tr -cd '[:alnum:]-')
+        SAFE_APP_NAME=$(echo "${APP_NAME:-$APP_NAME_FALLBACK}" | tr ' ' '-' | tr -cd '[:alnum:]-')
         ARTIFACT_NAME="${SAFE_APP_NAME}-Release-IPA"
         echo "APP_VERSION=$APP_VERSION" >> $GITHUB_ENV
         echo "APP_BUILD=$APP_BUILD" >> $GITHUB_ENV
@@ -181,6 +176,7 @@ jobs:
         TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
       run: |
         TEAM_ID=${TEAM_ID}
+        PROFILE_VALUE="${PP_NAME:-$PP_UUID}"
         cat > $RUNNER_TEMP/export-options.plist <<EOF
         <?xml version="1.0" encoding="UTF-8"?>
         <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -197,7 +193,7 @@ jobs:
             <key>provisioningProfiles</key>
             <dict>
                 <key>${BUNDLE_ID}</key>
-                <string>${PP_UUID}</string>
+                <string>${PROFILE_VALUE}</string>
             </dict>
             <key>stripSwiftSymbols</key>
             <true/>
@@ -209,11 +205,15 @@ jobs:
 
     - name: Export Signed IPA
       run: |
+        set -euo pipefail
+        ARCHIVE_PATH="${ARCHIVE_PATH:-$RUNNER_TEMP/Run-C-Release.xcarchive}"
+        EXPORT_DIR="${EXPORT_DIR:-$RUNNER_TEMP/export-release}"
+        rm -rf "$EXPORT_DIR"
         xcodebuild -exportArchive \
-          -archivePath "${ARCHIVE_PATH:-${{ runner.temp }}/NotesApp-Release.xcarchive}" \
-          -exportPath ${{ runner.temp }}/export-release \
+          -archivePath "$ARCHIVE_PATH" \
+          -exportPath "$EXPORT_DIR" \
           -exportOptionsPlist $RUNNER_TEMP/export-options.plist
-        IPA_PATH=$(ls ${{ runner.temp }}/export-release/*.ipa | head -n 1)
+        IPA_PATH=$(ls "$EXPORT_DIR"/*.ipa | head -n 1)
         if [ -z "$IPA_PATH" ]; then echo "::error title=Export failed::No IPA produced"; exit 1; fi
         echo "IPA_PATH=$IPA_PATH" >> $GITHUB_ENV
         echo "::notice title=Export Complete::IPA=$(basename "$IPA_PATH") BundleID=$BUNDLE_ID Version=$APP_VERSION Build=$APP_BUILD"
@@ -222,7 +222,7 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: ${{ env.ARTIFACT_NAME }}
-        path: ${{ runner.temp }}/export-release/*.ipa
+        path: ${{ env.EXPORT_DIR || format('{0}/export-release', runner.temp) }}/*.ipa
         retention-days: 90
 
     - name: Prepare App Store Connect API key (optional)
