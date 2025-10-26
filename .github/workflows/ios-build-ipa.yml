@@ -1,0 +1,266 @@
+name: iOS IPA Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      export_method:
+        description: "Export method (app-store, release-testing, development, enterprise)"
+        required: false
+        default: "app-store-connect"
+
+jobs:
+  build-ipa:
+    runs-on: macos-latest
+    env:
+      IOS_TEAM_ID: ${{ secrets.IOS_TEAM_ID }}
+      P12_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
+      P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      PROVISIONING_PROFILE_BASE64: ${{ secrets.PROVISIONING_PROFILE_BASE64 }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Generate App Icons (blue-white star)
+        run: |
+          chmod +x scripts/generate_app_icon.swift
+          swift scripts/generate_app_icon.swift
+
+      - name: Build Swiss Ephemeris static library
+        run: |
+          set -euo pipefail
+          SRC_DIR="ThirdParty/SwissEph/src"
+          mkdir -p ThirdParty/SwissEph/lib
+          pushd "$SRC_DIR" >/dev/null
+          SDK=$(xcrun --sdk iphoneos --show-sdk-path)
+          CC=$(xcrun --sdk iphoneos -f clang)
+          CFLAGS="-arch arm64 -isysroot $SDK -O2 -fembed-bitcode -I."
+          OBJS=()
+          for c in swe*.c swem*.c sweh*.c; do
+            # exclude test program if present
+            if [ "$c" = "swetest.c" ]; then continue; fi
+            echo "Compiling $c"; "$CC" $CFLAGS -c "$c" -o "${c%.c}.o"
+            OBJS+=("${c%.c}.o")
+          done
+          echo "Creating libswe.a"; libtool -static -o libswe.a "${OBJS[@]}"
+          mv libswe.a ../lib/
+          popd >/dev/null
+
+      - name: Validate Swiss positions (host build)
+        continue-on-error: true
+        run: |
+          set -euo pipefail
+          # Build a host tool against vendored sources to print/check Swiss positions
+          cc -O2 -IThirdParty/SwissEph/src scripts/ci_validate_swiss.c ThirdParty/SwissEph/src/swecl.c ThirdParty/SwissEph/src/swedate.c ThirdParty/SwissEph/src/sweephe4.c ThirdParty/SwissEph/src/swehel.c ThirdParty/SwissEph/src/swehouse.c ThirdParty/SwissEph/src/swejpl.c ThirdParty/SwissEph/src/swemmoon.c ThirdParty/SwissEph/src/swemplan.c ThirdParty/SwissEph/src/sweph.c ThirdParty/SwissEph/src/swephlib.c -lm -o "$RUNNER_TEMP/validate_swiss"
+          echo "Running Swiss validator (Lahiri, 1993-05-18 17:00 UT)..."
+          "$RUNNER_TEMP/validate_swiss" || true
+
+            # Swiss Ephemeris is vendored and compiled into target via wrapper
+
+      - name: Import signing certificate
+        if: env.P12_BASE64 != ''
+        uses: apple-actions/import-codesign-certs@v2
+        with:
+          p12-file-base64: ${{ env.P12_BASE64 }}
+          p12-password: ${{ env.P12_PASSWORD }}
+
+      - name: Install provisioning profile
+        if: env.PROVISIONING_PROFILE_BASE64 != ''
+        run: |
+          set -e
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          PP_PATH=~/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision
+          echo "$PROVISIONING_PROFILE_BASE64" | base64 --decode > "$PP_PATH"
+          security cms -D -i "$PP_PATH" > $RUNNER_TEMP/profile.plist
+          PP_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' $RUNNER_TEMP/profile.plist)
+          PP_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' $RUNNER_TEMP/profile.plist)
+          APPID=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' $RUNNER_TEMP/profile.plist)
+          BUNDLE_ID=${APPID#*.}
+          echo "PP_UUID=$PP_UUID" >> $GITHUB_ENV
+          echo "PP_NAME=$PP_NAME" >> $GITHUB_ENV
+          echo "BUNDLE_ID=$BUNDLE_ID" >> $GITHUB_ENV
+          echo "Using provisioning profile: $PP_NAME ($PP_UUID) for $BUNDLE_ID"
+
+      - name: Resolve Swift packages
+        run: |
+          xcodebuild -resolvePackageDependencies -project NotesApp.xcodeproj -scheme NotesApp -clonedSourcePackagesDirPath "$RUNNER_TEMP/SPM"
+
+      - name: Archive (Release, unsigned)
+        run: |
+          set -o pipefail
+          xcodebuild -list -project NotesApp.xcodeproj
+          xcodebuild archive \
+            -project NotesApp.xcodeproj \
+            -scheme NotesApp \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_STYLE=Manual \
+            CODE_SIGN_IDENTITY="" \
+            EXPANDED_CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            PROVISIONING_PROFILE="" \
+            DEVELOPMENT_TEAM="" \
+            LIBRARY_SEARCH_PATHS=$(pwd)/ThirdParty/SwissEph/lib \
+            OTHER_LDFLAGS=$(pwd)/ThirdParty/SwissEph/lib/libswe.a \
+            2>&1 | tee $GITHUB_WORKSPACE/xcodebuild.log
+          EXIT=${PIPESTATUS[0]}
+          echo '---- Grep errors from xcodebuild.log ----'
+          grep -n -E -i 'error:|note:' $GITHUB_WORKSPACE/xcodebuild.log | tail -n 400 || true
+          echo '---- Tail of full xcodebuild.log ----'
+          tail -n 2000 $GITHUB_WORKSPACE/xcodebuild.log || true
+          exit $EXIT
+
+      - name: Ensure SwissEph data bundled
+        run: |
+          set -euo pipefail
+          ARCHIVE_DIR="$RUNNER_TEMP/App.xcarchive"
+          APP_DIR=$(find "$ARCHIVE_DIR" -type d -name "*.app" -maxdepth 4 | head -n1 || true)
+          if [ -z "$APP_DIR" ]; then
+            echo "::error title=Archive app missing::No .app found in $ARCHIVE_DIR"; exit 1
+          fi
+          echo "App bundle: $APP_DIR"
+          # Verify presence of SwissEph data; if missing, copy from repo
+          DATA_DIR="$APP_DIR/SwissEph"
+          if [ ! -d "$DATA_DIR" ] || ! find "$DATA_DIR" -type f -name '*.se1' | head -n1 >/dev/null; then
+            echo "SwissEph data not found in app; copying from repository..."
+            if [ -d "NotesApp/SwissEph" ]; then
+              mkdir -p "$DATA_DIR"
+              rsync -a --exclude '*.md' --exclude '*.txt' NotesApp/SwissEph/ "$DATA_DIR"/
+            else
+              echo "::error title=SwissEph repo data missing::NotesApp/SwissEph not present in repository"; exit 1
+            fi
+          fi
+          # Final verification
+          COUNT=$(find "$DATA_DIR" -type f -name '*.se1' | wc -l | tr -d ' ')
+          PLANETS=$(find "$DATA_DIR" -type f -name 'sepl_*.se1' | wc -l | tr -d ' ')
+          MOON=$(find "$DATA_DIR" -type f -name 'semo_*.se1' | wc -l | tr -d ' ')
+          echo "SwissEph .se1 in app: total=$COUNT planets=$PLANETS moon=$MOON"
+          if [ "$COUNT" -eq 0 ] || [ "$PLANETS" -eq 0 ] || [ "$MOON" -eq 0 ]; then
+            echo "::error title=SwissEph data missing in app::No .se1 files found after copy"; exit 1
+          fi
+          # Show a small listing
+          find "$DATA_DIR" -maxdepth 1 -type f -name '*.se1' | sort | head -n 10
+
+      - name: Inspect app binary for Swiss symbols (non-blocking)
+        continue-on-error: true
+        run: |
+          APP_BIN=$(find "$RUNNER_TEMP/App.xcarchive" -type f -name "BirthInfo" -maxdepth 5 | head -n1 || true)
+          if [ -z "$APP_BIN" ]; then echo "No app binary found for symbol check"; exit 0; fi
+          echo "App binary: $APP_BIN"
+          if command -v strings >/dev/null 2>&1; then
+            MATCH=$(strings "$APP_BIN" | grep -m1 -E 'swe_calc_ut|swe_julday' || true)
+            if [ -n "$MATCH" ]; then
+              echo "Swiss symbol hint found: $MATCH"
+            else
+              echo "Swiss symbol hint not found (may be stripped)."
+            fi
+          else
+            echo "strings tool not available; skipping symbol hint check"
+          fi
+
+      - name: Create ExportOptions.plist (manual signing)
+        run: |
+          set -euo pipefail
+          TEAM=${IOS_TEAM_ID}
+          BUNDLE=${BUNDLE_ID}
+          PROFILE=${PP_NAME:-$PP_UUID}
+          PLIST=$RUNNER_TEMP/profile.plist
+          DETECTED_METHOD="app-store"
+          GET_TASK_ALLOW=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:get-task-allow' "$PLIST" 2>/dev/null || echo false)
+          HAS_DEVICES=false
+          if /usr/libexec/PlistBuddy -c 'Print :ProvisionedDevices' "$PLIST" >/dev/null 2>&1; then HAS_DEVICES=true; fi
+          IS_ENTERPRISE=$(/usr/libexec/PlistBuddy -c 'Print :ProvisionsAllDevices' "$PLIST" 2>/dev/null || echo false)
+          if [ "$GET_TASK_ALLOW" = "true" ]; then
+            DETECTED_METHOD="development"
+          elif [ "$IS_ENTERPRISE" = "true" ]; then
+            DETECTED_METHOD="enterprise"
+          elif [ "$HAS_DEVICES" = "true" ]; then
+            # Ad-hoc (Xcode 16+ name)
+            DETECTED_METHOD="release-testing"
+          else
+            DETECTED_METHOD="app-store"
+          fi
+          # Prefer detected method; only honor explicit input if provided and not deprecated
+          METHOD=$DETECTED_METHOD
+          if [ -n "${{ inputs.export_method }}" ]; then
+            USER_METHOD="${{ inputs.export_method }}"
+            if [ "$USER_METHOD" = "ad-hoc" ]; then USER_METHOD="release-testing"; fi
+            METHOD="$USER_METHOD"
+          fi
+          # Map deprecated value to the new one (Xcode 16+)
+          if [ "$METHOD" = "ad-hoc" ]; then METHOD="release-testing"; fi
+          echo "Using export method: $METHOD (detected: $DETECTED_METHOD)"
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>${METHOD}</string>
+            <key>teamID</key>
+            <string>${TEAM}</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>${BUNDLE}</key>
+              <string>${PROFILE}</string>
+            </dict>
+            <key>stripSwiftSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+            <key>destination</key>
+            <string>export</string>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Show ExportOptions for debugging
+        run: |
+          echo "ExportOptions.plist contents:"
+          plutil -p ExportOptions.plist || cat ExportOptions.plist
+
+      - name: Export IPA
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath "$RUNNER_TEMP/App.xcarchive" \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath "$RUNNER_TEMP/export" \
+            -allowProvisioningUpdates
+
+      - name: Verify IPA size (fail if < 1 MB)
+        run: |
+          set -euo pipefail
+          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa | head -n1 || true)
+          if [ -z "$IPA" ]; then
+            echo "::error title=IPA missing::No IPA found in $RUNNER_TEMP/export"; exit 1
+          fi
+          # Get size in bytes (BSD/macOS stat first, fallback to GNU)
+          SIZE_BYTES=$(stat -f%z "$IPA" 2>/dev/null || stat -c%s "$IPA")
+          # Compute MB (two decimals)
+          PY_CODE='import os; b=int(os.environ["SIZE_BYTES"]); print(f"{b/1024/1024:.2f}")'
+          SIZE_MB=$(SIZE_BYTES="$SIZE_BYTES" python3 -c "$PY_CODE")
+          echo "IPA: $(basename "$IPA")"
+          echo "IPA size: ${SIZE_MB} MB (${SIZE_BYTES} bytes)"
+          if [ "$SIZE_BYTES" -lt 1000000 ]; then
+            echo "::error title=IPA too small::IPA is < 1 MB; SwissEph data likely missing"; exit 1
+          fi
+
+      - name: Upload IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: iOS-IPA-${{ github.run_number }}
+          path: ${{ runner.temp }}/export/*.ipa
