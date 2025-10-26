@@ -18,15 +18,16 @@ struct NotesListView: View {
                         Text(note.title ?? "Untitled")
                             .font(.headline)
                             .lineLimit(1)
+                            .foregroundColor(.primary) // Ensure primary text is visible
                         
                         Text(note.content ?? "")
                             .font(.body)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.secondary) // Secondary text
                             .lineLimit(2)
                         
                         Text(note.modifiedDate ?? Date(), style: .date)
                             .font(.caption)
-                            .foregroundColor(.secondary)
+                            .foregroundColor(.secondary) // Secondary text
                     }
                     .padding(.vertical, 2)
                 }
@@ -50,6 +51,19 @@ struct NotesListView: View {
             ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
             }
+        }
+        .tint(.blue) // Set accent color for navigation links and buttons
+        .onAppear {
+            // Customize navigation bar appearance
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.systemBlue // Blue background
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white] // White title
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white] // White large title
+            
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            UINavigationBar.appearance().compactAppearance = appearance
         }
         .sheet(isPresented: $showingAddNote) {
             NoteDetailView(note: nil)

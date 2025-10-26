@@ -15,9 +15,9 @@ struct CSyntaxHighlighter {
     private static let commentPattern = "//.*|/\\*.*?\\*/"
     private static let stringPattern = "\"(\\\\.|[^\"])*\""
 
-    private static let keywordColor = UIColor.systemPurple
-    private static let commentColor = UIColor.systemGreen
-    private static let stringColor = UIColor.systemOrange
+    private static let keywordColor = UIColor.systemBlue.withAlphaComponent(0.8)
+    private static let commentColor = UIColor.systemGreen.withAlphaComponent(0.7)
+    private static let stringColor = UIColor.systemOrange.withAlphaComponent(0.8)
     private static let defaultColor = UIColor.label
     private static let errorColor = UIColor.systemRed.withAlphaComponent(0.2)
 
@@ -110,7 +110,7 @@ struct CodeEditorView: UIViewRepresentable {
         textView.autocapitalizationType = .none
         textView.autocorrectionType = .no
         textView.isScrollEnabled = true
-        textView.backgroundColor = .secondarySystemBackground
+        textView.backgroundColor = .white // White background for code editor
         textView.layer.cornerRadius = 8
         textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 12, right: 8)
         textView.attributedText = CSyntaxHighlighter.highlight(text: text)
@@ -198,6 +198,19 @@ struct CEditorView: View {
                 .accessibilityLabel("Run C code")
             }
         }
+        .tint(.blue) // Set accent color for buttons
+        .onAppear {
+            // Customize navigation bar appearance for this view
+            let appearance = UINavigationBarAppearance()
+            appearance.configureWithOpaqueBackground()
+            appearance.backgroundColor = UIColor.systemBlue // Blue background
+            appearance.titleTextAttributes = [.foregroundColor: UIColor.white] // White title
+            appearance.largeTitleTextAttributes = [.foregroundColor: UIColor.white] // White large title
+            
+            UINavigationBar.appearance().standardAppearance = appearance
+            UINavigationBar.appearance().scrollEdgeAppearance = appearance
+            UINavigationBar.appearance().compactAppearance = appearance
+        }
         .animation(.default, value: warnings)
         .animation(.default, value: errorMessage)
     }
@@ -220,6 +233,7 @@ struct CEditorView: View {
         }
         .padding()
         .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white) // White background for header
     }
 
     private var consoleView: some View {
@@ -240,7 +254,7 @@ struct CEditorView: View {
                     .font(.system(.body, design: .monospaced))
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(12)
-                    .background(Color(.secondarySystemBackground))
+                    .background(Color.white) // White background for console output
                     .cornerRadius(8)
             }
 
@@ -258,7 +272,7 @@ struct CEditorView: View {
             }
         }
         .padding()
-        .background(Color(.systemGroupedBackground))
+        .background(Color.white) // White background for console view
     }
 
     private var outputText: String {

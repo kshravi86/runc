@@ -1,0 +1,71 @@
+5s
+Run set -o pipefail
+Command line invocation:
+    /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/xcodebuild -list -project Run-C.xcodeproj
+
+Information about project "Run-C":
+    Targets:
+        NotesApp
+
+    Build Configurations:
+        Debug
+        Release
+
+    If no build configuration is specified and -scheme is not passed then "Release" is used.
+
+    Schemes:
+        Run-C
+
+Command line invocation:
+    /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/xcodebuild archive -project Run-C.xcodeproj -scheme Run-C -configuration Release -destination generic/platform=iOS -archivePath /Users/runner/work/_temp/App.xcarchive CODE_SIGN_STYLE=Manual DEVELOPMENT_TEAM=*** "CODE_SIGN_IDENTITY=Apple Distribution" PROVISIONING_PROFILE_SPECIFIER=pythonchefiosditribution
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = Apple Distribution
+    CODE_SIGN_STYLE = Manual
+    DEVELOPMENT_TEAM = ***
+    PROVISIONING_PROFILE_SPECIFIER = pythonchefiosditribution
+
+note: Using codesigning identity override: Apple Distribution
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'NotesApp' in project 'Run-C' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/momc --dry-run --action generate --swift-version 5.0 --sdkroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk --iphoneos-deployment-target 17.0 --module NotesApp /Users/runner/work/runc/runc/NotesApp/NotesModel.xcdatamodeld /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/CoreDataGenerated/NotesModel
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/runc/runc/NotesApp/Preview Content/Preview Assets.xcassets /Users/runner/work/runc/runc/NotesApp/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 953b4a1ea7fa4d411dac9707a0f79587
+Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/XCBuildData/953b4a1ea7fa4d411dac9707a0f79587.xcbuilddata
+error: Could not determine generated file paths for Core Data code generation: The command `(cd /Users/runner/work/runc/runc && /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/momc --dry-run --action generate --swift-version 5.0 --sdkroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk --iphoneos-deployment-target 17.0 --module NotesApp /Users/runner/work/runc/runc/NotesApp/NotesModel.xcdatamodeld /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/CoreDataGenerated/NotesModel)` exited with status 1. The command's standard error was:
+
+/Users/runner/work/runc/runc/NotesApp/NotesModel.xcdatamodeld:: error: Could not fetch generated file paths: No current version for model at path /Users/runner/work/runc/runc/NotesApp/NotesModel.xcdatamodeld: [0]
+ (in target 'NotesApp' from project 'Run-C')
+** ARCHIVE FAILED **
+
+
+The following build commands failed:
+	Archiving project Run-C with scheme Run-C
+(1 failure)
