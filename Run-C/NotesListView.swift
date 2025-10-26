@@ -41,6 +41,13 @@ struct NotesListView: View {
                 }
             }
             ToolbarItem(placement: .navigationBarLeading) {
+                NavigationLink {
+                    CEditorView()
+                } label: {
+                    Label("C Editor", systemImage: "c.circle")
+                }
+            }
+            ToolbarItem(placement: .navigationBarLeading) {
                 EditButton()
             }
         }
