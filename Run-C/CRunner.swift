@@ -625,7 +625,7 @@ private struct CParser {
         return value == symbol
     }
 
-    private func isAtEnd -> Bool {
+    private var isAtEnd: Bool {
         index >= tokens.count
     }
 
