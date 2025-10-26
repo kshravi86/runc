@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1B2C3D4E5F6AAAABBBBCC02 /* CEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6AAAABBBBCC01 /* CEditorView.swift */; };
+		A1B2C3D4E5F6AAAABBBBCC04 /* CRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6AAAABBBBCC03 /* CRunner.swift */; };
 		7A8B9C1D2E3F4567890ABCDE /* NotesAppApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCDF /* NotesAppApp.swift */; };
 		7A8B9C1D2E3F4567890ABCE0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE1 /* ContentView.swift */; };
 		7A8B9C1D2E3F4567890ABCE2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE3 /* Assets.xcassets */; };
@@ -18,6 +20,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A1B2C3D4E5F6AAAABBBBCC01 /* CEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CEditorView.swift; sourceTree = "<group>"; };
+		A1B2C3D4E5F6AAAABBBBCC03 /* CRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CRunner.swift; sourceTree = "<group>"; };
 		7A8B9C1D2E3F4567890ABCF2 /* NotesApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NotesApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A8B9C1D2E3F4567890ABCDF /* NotesAppApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesAppApp.swift; sourceTree = "<group>"; };
 		7A8B9C1D2E3F4567890ABCE1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -60,6 +64,8 @@
 		7A8B9C1D2E3F4567890ABCF6 /* Run-C */ = {
 			isa = PBXGroup;
 			children = (
+				A1B2C3D4E5F6AAAABBBBCC03 /* CRunner.swift */,
+				A1B2C3D4E5F6AAAABBBBCC01 /* CEditorView.swift */,
 				7A8B9C1D2E3F4567890ABCDF /* NotesAppApp.swift */,
 				7A8B9C1D2E3F4567890ABCE1 /* ContentView.swift */,
 				7A8B9C1D2E3F4567890ABCEB /* NotesListView.swift */,
@@ -151,6 +157,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A1B2C3D4E5F6AAAABBBBCC02 /* CEditorView.swift in Sources */,
+				A1B2C3D4E5F6AAAABBBBCC04 /* CRunner.swift in Sources */,
 				7A8B9C1D2E3F4567890ABCE6 /* NotesModel.xcdatamodeld in Sources */,
 				7A8B9C1D2E3F4567890ABCE8 /* PersistenceController.swift in Sources */,
 				7A8B9C1D2E3F4567890ABCE0 /* ContentView.swift in Sources */,
