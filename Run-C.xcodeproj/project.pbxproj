@@ -13,10 +13,6 @@
 		7A8B9C1D2E3F4567890ABCE0 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE1 /* ContentView.swift */; };
 		7A8B9C1D2E3F4567890ABCE2 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE3 /* Assets.xcassets */; };
 		7A8B9C1D2E3F4567890ABCE4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE5 /* Preview Assets.xcassets */; };
-		7A8B9C1D2E3F4567890ABCE6 /* NotesModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE7 /* NotesModel.xcdatamodeld */; };
-		7A8B9C1D2E3F4567890ABCE8 /* PersistenceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCE9 /* PersistenceController.swift */; };
-		7A8B9C1D2E3F4567890ABCEA /* NotesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCEB /* NotesListView.swift */; };
-		7A8B9C1D2E3F4567890ABCEC /* NoteDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A8B9C1D2E3F4567890ABCED /* NoteDetailView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,11 +23,6 @@
 		7A8B9C1D2E3F4567890ABCE1 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7A8B9C1D2E3F4567890ABCE3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		7A8B9C1D2E3F4567890ABCE5 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		7A8B9C1D2E3F4567890ABCE7 /* NotesModel.xcdatamodeld */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NotesModel.xcdatamodeld; sourceTree = "<group>"; };
-		7A8B9C1D2E3F4567890ABCE9 /* PersistenceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersistenceController.swift; sourceTree = "<group>"; };
-		7A8B9C1D2E3F4567890ABCEB /* NotesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotesListView.swift; sourceTree = "<group>"; };
-		7A8B9C1D2E3F4567890ABCED /* NoteDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NoteDetailView.swift; sourceTree = "<group>"; };
-		7A8B9C1D2E3F4567890ABCF3 /* NotesModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NotesModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,10 +59,6 @@
 				A1B2C3D4E5F6AAAABBBBCC01 /* CEditorView.swift */,
 				7A8B9C1D2E3F4567890ABCDF /* NotesAppApp.swift */,
 				7A8B9C1D2E3F4567890ABCE1 /* ContentView.swift */,
-				7A8B9C1D2E3F4567890ABCEB /* NotesListView.swift */,
-				7A8B9C1D2E3F4567890ABCED /* NoteDetailView.swift */,
-				7A8B9C1D2E3F4567890ABCE9 /* PersistenceController.swift */,
-				7A8B9C1D2E3F4567890ABCE7 /* NotesModel.xcdatamodeld */,
 				7A8B9C1D2E3F4567890ABCE3 /* Assets.xcassets */,
 				7A8B9C1D2E3F4567890ABCF8 /* Preview Content */,
 			);
@@ -159,11 +146,7 @@
 			files = (
 				A1B2C3D4E5F6AAAABBBBCC02 /* CEditorView.swift in Sources */,
 				A1B2C3D4E5F6AAAABBBBCC04 /* CRunner.swift in Sources */,
-				7A8B9C1D2E3F4567890ABCE6 /* NotesModel.xcdatamodeld in Sources */,
-				7A8B9C1D2E3F4567890ABCE8 /* PersistenceController.swift in Sources */,
 				7A8B9C1D2E3F4567890ABCE0 /* ContentView.swift in Sources */,
-				7A8B9C1D2E3F4567890ABCEA /* NotesListView.swift in Sources */,
-				7A8B9C1D2E3F4567890ABCEC /* NoteDetailView.swift in Sources */,
 				7A8B9C1D2E3F4567890ABCDE /* NotesAppApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -369,18 +352,6 @@
 		};
 /* End XCConfigurationList section */
 
-/* Begin XCVersionGroup section */
-		7A8B9C1D2E3F4567890ABCE7 /* NotesModel.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				7A8B9C1D2E3F4567890ABCF3 /* NotesModel.xcdatamodel */,
-			);
-			currentVersion = 7A8B9C1D2E3F4567890ABCF3 /* NotesModel.xcdatamodel */;
-			path = NotesModel.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-/* End XCVersionGroup section */
 	};
 	rootObject = 7A8B9C1D2E3F4567890ABCFD /* Project object */;
 }

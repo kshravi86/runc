@@ -3,12 +3,14 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         NavigationStack {
-            NotesListView()
+            CEditorView()
+                .navigationTitle("Run-C")
         }
     }
 }
 
 #Preview {
-    ContentView()
-        .environment(\.managedObjectContext, PersistenceController.preview.container.viewContext)
+    NavigationStack {
+        CEditorView()
+    }
 }

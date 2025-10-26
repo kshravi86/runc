@@ -1,26 +1,10 @@
 import SwiftUI
 
 @main
-struct NotesAppApp: App {
-    private let persistenceController = PersistenceController.shared
-
-    @Environment(\.scenePhase) private var scenePhase
-
+struct RunCApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .environment(\.managedObjectContext, persistenceController.container.viewContext)
-        }
-        .onChange(of: scenePhase) { _, newPhase in
-            guard newPhase == .background else { return }
-            saveContext()
-        }
-    }
-
-    private func saveContext() {
-        let context = persistenceController.container.viewContext
-        if context.hasChanges {
-            try? context.save()
         }
     }
 }
