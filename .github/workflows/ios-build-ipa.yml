@@ -77,6 +77,12 @@ jobs:
           set -euo pipefail
           BUNDLE_ID=$(xcodebuild -project "$PROJECT" -scheme "$SCHEME" -showBuildSettings \
             | awk '/PRODUCT_BUNDLE_IDENTIFIER/ {print $3; exit}')
+          if [ -z "$BUNDLE_ID" ] || [ "$BUNDLE_ID" = "NO" ]; then
+            INFO_PLIST_PATH="Run-C/Info.plist"
+            if [ -f "$INFO_PLIST_PATH" ]; then
+              BUNDLE_ID=$(/usr/libexec/PlistBuddy -c 'Print :ApplicationProperties:CFBundleIdentifier' "$INFO_PLIST_PATH" 2>/dev/null || true)
+            fi
+          fi
           if [ -z "$BUNDLE_ID" ]; then
             echo "::error title=Bundle id missing::Could not determine PRODUCT_BUNDLE_IDENTIFIER"
             exit 1
