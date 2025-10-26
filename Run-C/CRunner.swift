@@ -238,7 +238,7 @@ private struct CLexer {
 
 // MARK: - Parser
 
-private enum Statement {
+private indirect enum Statement {
     case declaration(name: String, value: Expression?)
     case assignment(name: String, op: AssignmentOperator, value: Expression)
     case printf(format: String, arguments: [Expression])
