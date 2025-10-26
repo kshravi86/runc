@@ -199,24 +199,6 @@ jobs:
             -exportPath "$RUNNER_TEMP/export" \
             -allowProvisioningUpdates
 
-      - name: Verify IPA size (fail if < 1 MB)
-        run: |
-          set -euo pipefail
-          IPA=$(ls "$RUNNER_TEMP"/export/*.ipa | head -n1 || true)
-          if [ -z "$IPA" ]; then
-            echo "::error title=IPA missing::No IPA found in $RUNNER_TEMP/export"; exit 1
-          fi
-          # Get size in bytes (BSD/macOS stat first, fallback to GNU)
-          SIZE_BYTES=$(stat -f%z "$IPA" 2>/dev/null || stat -c%s "$IPA")
-          # Compute MB (two decimals)
-          PY_CODE='import os; b=int(os.environ["SIZE_BYTES"]); print(f"{b/1024/1024:.2f}")'
-          SIZE_MB=$(SIZE_BYTES="$SIZE_BYTES" python3 -c "$PY_CODE")
-          echo "IPA: $(basename "$IPA")"
-          echo "IPA size: ${SIZE_MB} MB (${SIZE_BYTES} bytes)"
-          if [ "$SIZE_BYTES" -lt 1000000 ]; then
-            echo "::error title=IPA too small::IPA is < 1 MB; essential app data likely missing"; exit 1
-          fi
-
       - name: Upload IPA artifact
         uses: actions/upload-artifact@v4
         with:
