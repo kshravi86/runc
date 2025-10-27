@@ -407,8 +407,8 @@ private struct CParser {
     }
 
     private mutating func parseAssignmentLikeStatement(expectTerminator: Bool = true) throws -> Statement {
-        guard case .identifier(let name)? = advance() else {
-            throw CCompilerError.syntax(message: "Expected identifier")
+        guard case .identifier(let name, _)? = advance() else {
+            throw CCompilerError.syntax(message: "Expected identifier", lineNumber: currentLineNumber)
         }
 
         if match(symbol: "++") {
@@ -423,8 +423,8 @@ private struct CParser {
             return .assignment(name: name, op: .assign, value: decrement)
         }
 
-        guard case .symbol(let symbol)? = advance() else {
-            throw CCompilerError.syntax(message: "Expected assignment operator after identifier '\(name)'")
+        guard case .symbol(let symbol, _)? = advance() else {
+            throw CCompilerError.syntax(message: "Expected assignment operator after identifier '\(name)'", lineNumber: currentLineNumber)
         }
 
         let assignmentOperator: AssignmentOperator
@@ -449,8 +449,8 @@ private struct CParser {
 
     private mutating func parsePrintfCall() throws -> Statement {
         try consume(symbol: "(")
-        guard case .stringLiteral(let format)? = advance() else {
-            throw CCompilerError.syntax(message: "printf expects a string literal as the first argument")
+        guard case .stringLiteral(let format, _)? = advance() else {
+            throw CCompilerError.syntax(message: "printf expects a string literal as the first argument", lineNumber: currentLineNumber)
         }
         var arguments: [Expression] = []
         while match(symbol: ",") {
@@ -574,20 +574,20 @@ private struct CParser {
             return expr
         }
         guard let token = advance() else {
-            throw CCompilerError.syntax(message: "Unexpected end of expression")
+            throw CCompilerError.syntax(message: "Unexpected end of expression", lineNumber: currentLineNumber)
         }
         switch token {
-        case .number(let value):
+        case .number(let value, _):
             return .number(value)
-        case .identifier(let name):
+        case .identifier(let name, _):
             return .identifier(name)
         default:
-            throw CCompilerError.syntax(message: "Unexpected token in expression")
+            throw CCompilerError.syntax(message: "Unexpected token in expression", lineNumber: currentLineNumber)
         }
     }
 
     private func currentBinaryOperator() -> BinaryOperator? {
-        guard case .symbol(let symbol)? = peek() else { return nil }
+        guard case .symbol(let symbol, _)? = peek() else { return nil }
         switch symbol {
         case "*": return .multiply
         case "/": return .divide
@@ -627,7 +627,7 @@ private struct CParser {
     }
 
     private mutating func match(symbol: String) -> Bool {
-        guard case .symbol(let value)? = peek(), value == symbol else { return false }
+        guard case .symbol(let value, _)? = peek(), value == symbol else { return false }
         _ = advance()
         return true
     }
@@ -639,7 +639,7 @@ private struct CParser {
     }
 
     private func check(symbol: String) -> Bool {
-        guard case .symbol(let value)? = peek() else { return false }
+        guard case .symbol(let value, _)? = peek() else { return false }
         return value == symbol
     }
 
@@ -749,10 +749,10 @@ private struct CInterpreter {
             case .multiply:
                 newValue = try context.value(of: name) * rhs
             case .divide:
-                guard rhs != 0 else { throw CCompilerError.runtime(message: "Division by zero") }
+                guard rhs != 0 else { throw CCompilerError.runtime(message: "Division by zero", lineNumber: nil) }
                 newValue = try context.value(of: name) / rhs
             case .mod:
-                guard rhs != 0 else { throw CCompilerError.runtime(message: "Modulo by zero") }
+                guard rhs != 0 else { throw CCompilerError.runtime(message: "Modulo by zero", lineNumber: nil) }
                 newValue = try context.value(of: name) % rhs
             }
             try context.assign(name, value: newValue)
@@ -840,10 +840,10 @@ private struct CInterpreter {
             switch op {
             case .multiply: return left * right
             case .divide:
-                guard right != 0 else { throw CCompilerError.runtime(message: "Division by zero") }
+                guard right != 0 else { throw CCompilerError.runtime(message: "Division by zero", lineNumber: nil) }
                 return left / right
             case .mod:
-                guard right != 0 else { throw CCompilerError.runtime(message: "Modulo by zero") }
+                guard right != 0 else { throw CCompilerError.runtime(message: "Modulo by zero", lineNumber: nil) }
                 return left % right
             case .add: return left + right
             case .subtract: return left - right
