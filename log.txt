@@ -1,52 +1,183 @@
-11s
+
+Navigation Menu
+kshravi86
+runc
+
+Type / to search
+Code
+Issues
+Pull requests
+Actions
+Projects
+Security
+Insights
+Settings
+iOS IPA Build
+Adasd #33
+Jobs
+Run details
+build-ipa
+failed 9 minutes ago in 32s
+Search logs
+2s
+1s
+1s
+0s
+3s
+0s
+1s
+6s
 Run set -euo pipefail
-Command line invocation:
-    /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/xcodebuild archive -project Run-C.xcodeproj -scheme Run-C -configuration Release -destination generic/platform=iOS -archivePath /Users/runner/work/_temp/Run-C-Release.xcarchive CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=iOS Distribution" PROVISIONING_PROFILE_SPECIFIER=pythonchefiosditribution DEVELOPMENT_TEAM=*** CURRENT_PROJECT_VERSION=202510261611
-
-Build settings from command line:
-    CODE_SIGN_IDENTITY = iOS Distribution
-    CODE_SIGN_STYLE = Manual
-    CURRENT_PROJECT_VERSION = 202510261611
-    DEVELOPMENT_TEAM = ***
-    PROVISIONING_PROFILE_SPECIFIER = pythonchefiosditribution
-
-note: Using codesigning identity override: iOS Distribution
+  
+2s
+12s
 ComputePackagePrebuildTargetDependencyGraph
-
 Prepare packages
-
 CreateBuildRequest
-
 SendProjectDescription
-
 CreateBuildOperation
-
 ComputeTargetDependencyGraph
 note: Building targets in dependency order
 note: Target dependency graph (1 target)
     Target 'NotesApp' in project 'Run-C' (no dependencies)
-
 GatherProvisioningInputs
-
 CreateBuildDescription
-
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/runc/runc/Run-C/Assets.xcassets
-
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -x c -c /dev/null
-
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --version --output-format xml1
-
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
-
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
-
-Build description signature: 7be49f5ac74645edc4cf31885ea1a74f
+Build description signature: b868c0e72ad2c4ad308c3b36dce54a1e
+Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/XCBuildData/b868c0e72ad2c4ad308c3b36dce54a1e.xcbuilddata
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath
+ClangStatCache /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk /Users/runner/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos26.0-23A339-3885c01c3e6b6a337905948deab2002ee897cee61435230feef45a4748fd4bcc.sdkstatcache
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang-stat-cache /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -o /Users/runner/Library/Developer/Xcode/DerivedData/SDKStatCaches.noindex/iphoneos26.0-23A339-3885c01c3e6b6a337905948deab2002ee897cee61435230feef45a4748fd4bcc.sdkstatcache
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/Run-C-6f0a03f797cd6786fbf55db0657d8663-VFS-iphoneos/all-product-headers.yaml
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/Run-C-6f0a03f797cd6786fbf55db0657d8663-VFS-iphoneos/all-product-headers.yaml
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/SwiftExplicitPrecompiledModules
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/SwiftExplicitPrecompiledModules
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/ExplicitPrecompiledModules
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/ExplicitPrecompiledModules
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/EagerLinkingTBDs/Release-iphoneos
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/EagerLinkingTBDs/Release-iphoneos
+CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath/Release-iphoneos
+    cd /Users/runner/work/runc/runc/Run-C.xcodeproj
+    builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath/Release-iphoneos
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/empty-NotesApp.plist (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/empty-NotesApp.plist
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp_const_extract_protocols.json (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp_const_extract_protocols.json
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.SwiftFileList (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.SwiftFileList
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.SwiftConstValuesFileList (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.SwiftConstValuesFileList
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.LinkFileList (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.LinkFileList
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp-OutputFileMap.json (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp-OutputFileMap.json
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.hmap (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.hmap
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.DependencyStaticMetadataFileList (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.DependencyStaticMetadataFileList
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.DependencyMetadataFileList (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.DependencyMetadataFileList
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-project-headers.hmap (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-project-headers.hmap
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-own-target-headers.hmap (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-own-target-headers.hmap
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-generated-files.hmap (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-generated-files.hmap
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-all-target-headers.hmap (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-all-target-headers.hmap
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-all-non-framework-target-headers.hmap (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp-all-non-framework-target-headers.hmap
+WriteAuxiliaryFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/Entitlements.plist (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    write-file /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/Entitlements.plist
+SymLink /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath/Release-iphoneos/NotesApp.app ../../InstallationBuildProductsLocation/Applications/NotesApp.app (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /bin/ln -sfh ../../InstallationBuildProductsLocation/Applications/NotesApp.app /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath/Release-iphoneos/NotesApp.app
+MkDir /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /bin/mkdir -p /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app
+ValidateDevelopmentAssets /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    builtin-validate-development-assets --validate YES_ERROR /Users/runner/work/runc/runc/Run-C/Preview\ Content
+ProcessProductPackaging /Users/runner/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/embedded.mobileprovision (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    builtin-productPackagingUtility /Users/runner/Library/MobileDevice/Provisioning\ Profiles/profile.mobileprovision -o /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/embedded.mobileprovision
+ProcessProductPackaging "" /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.app.xcent (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    
+    Entitlements:
+    
+    {
+    "application-identifier" = "***.com.murugan.guha";
+    "beta-reports-active" = 1;
+    "com.apple.developer.team-identifier" = ***;
+    "get-task-allow" = 0;
+}
+    
+    builtin-productPackagingUtility -entitlements -format xml -o /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.app.xcent
+ProcessProductPackagingDER /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.app.xcent /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.app.xcent.der (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /usr/bin/derq query -f xml -i /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.app.xcent -o /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/NotesApp.app.xcent.der --raw
+MkDir /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/unthinned (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /bin/mkdir -p /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/unthinned
+MkDir /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /bin/mkdir -p /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned
+GenerateAssetSymbols /Users/runner/work/runc/runc/Run-C/Assets.xcassets (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool /Users/runner/work/runc/runc/Run-C/Assets.xcassets --compile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_dependencies --output-partial-info-plist /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist --app-icon AppIcon --accent-color AccentColor --compress-pngs --enable-on-demand-resources YES --devel
+/* com.apple.actool.compilation-results */
+/Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols-Index.plist
+/Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.h
+/Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.swift
+CompileAssetCatalogVariant thinned /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app /Users/runner/work/runc/runc/Run-C/Assets.xcassets (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool /Users/runner/work/runc/runc/Run-C/Assets.xcassets --compile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor -
+/Users/runner/work/runc/runc/Run-C/CRunner.swift:329:30: error: consecutive statements on a line must be separated by ';'
+                            }            if case .symbol("(") = token {
+                             ^
+                             ;
+SwiftDriver NotesApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NotesApp' from project 'Run-C')
+    cd /Users/runner/work/runc/runc
+    builtin-SwiftDriver -- /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NotesApp -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -target arm64-apple-ios17.0 -g -module-cache-path /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath/Release-iphoneos -F /Users/ru
+/Users/runner/work/runc/runc/Run-C/CRunner.swift:329:30: error: Consecutive statements on a line must be separated by ';'
+                            }            if case .symbol("(") = token {
+                             ^
+                             ; (in target 'NotesApp' from project 'Run-C')
 ** ARCHIVE FAILED **
-Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/XCBuildData/7be49f5ac74645edc4cf31885ea1a74f.xcbuilddata
-
-/Users/runner/work/runc/runc/Run-C.xcodeproj: error: No certificate for team '***' matching 'iOS Distribution' found: Select a different signing certificate for CODE_SIGN_IDENTITY, a team that matches your selected certificate, or switch to automatic provisioning. (in target 'NotesApp' from project 'Run-C')
-
 The following build commands failed:
+	SwiftDriver NotesApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NotesApp' from project 'Run-C')
 	Archiving project Run-C with scheme Run-C
-(1 failure)
-Error: Process completed with exit code 65.
+(2 failures)

@@ -324,9 +324,10 @@ private struct CParser {
         }
         var depth = 1
         while depth > 0 {
-                            guard let token = advance() else {
-                                throw CCompilerError.syntax(message: "Unterminated parameter list", lineNumber: currentLineNumber)
-                            }            if case .symbol("(") = token {
+            guard let token = advance() else {
+                throw CCompilerError.syntax(message: "Unterminated parameter list", lineNumber: currentLineNumber)
+            }
+            if case .symbol("(") = token {
                 depth += 1
             } else if case .symbol(")") = token {
                 depth -= 1
