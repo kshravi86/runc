@@ -280,7 +280,7 @@ final class CodeEditorHostView: UIView {
 }
 
 /// A simple view to draw line numbers.
-private class LineNumberGutterView: UIView {
+final class LineNumberGutterView: UIView {
     weak var textView: UITextView?
     
     init(textView: UITextView) {
@@ -396,12 +396,11 @@ struct CodeEditorView: UIViewRepresentable {
                         extraIndent = "    "
                     }
                     let insertion = "\n" + String(indentPrefix) + extraIndent
-                    if let textRange = Range(range, in: textView.text) {
-                        // Replace manually to preserve attributes
+                    let maxLen = (textView.attributedText?.length ?? ns.length)
+                    if range.location <= maxLen && range.location + range.length <= maxLen {
                         let mutable = NSMutableAttributedString(attributedString: textView.attributedText)
                         mutable.replaceCharacters(in: range, with: insertion)
                         textView.attributedText = mutable
-                        // Move cursor
                         let pos = range.location + (insertion as NSString).length
                         if let start = textView.position(from: textView.beginningOfDocument, offset: pos) {
                             textView.selectedTextRange = textView.textRange(from: start, to: start)
