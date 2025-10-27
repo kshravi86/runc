@@ -217,7 +217,7 @@ private class SymbolInputAccessoryView: UIView {
 // MARK: - Code Editor View (UIViewRepresentable)
 
 /// A custom UIView that hosts the UITextView and a line number gutter.
-private class CodeEditorHostView: UIView {
+final class CodeEditorHostView: UIView {
     let textView: UITextView
     let lineNumberGutter: LineNumberGutterView
     var errorLine: Int?
