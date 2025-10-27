@@ -54,6 +54,29 @@ struct CSyntaxHighlighter {
         return attributedString
     }
 
+    static func highlight(text: String, errorLine: Int?) -> NSAttributedString {
+        let attributed = NSMutableAttributedString(attributedString: highlight(text: text))
+        if let errorLine, errorLine > 0 {
+            let nsText = attributed.string as NSString
+            var currentLine = 1
+            var location = 0
+            let length = nsText.length
+            while currentLine < errorLine && location < length {
+                let range = nsText.range(of: "\n", options: [], range: NSRange(location: location, length: length - location))
+                if range.location == NSNotFound { break }
+                location = range.location + 1
+                currentLine += 1
+            }
+            if currentLine == errorLine {
+                let lineEndRange = nsText.range(of: "\n", options: [], range: NSRange(location: location, length: max(0, length - location)))
+                let lineLen = lineEndRange.location == NSNotFound ? (length - location) : (lineEndRange.location - location)
+                let lineRange = NSRange(location: location, length: max(0, lineLen))
+                attributed.addAttribute(.backgroundColor, value: UIColor.systemRed.withAlphaComponent(0.25), range: lineRange)
+            }
+        }
+        return attributed
+    }
+
     private static func applyHighlighting(
         to attributedString: NSMutableAttributedString,
         pattern: String,
@@ -99,29 +122,233 @@ struct CSyntaxHighlighter {
     }
 }
 
+/// A custom input accessory view for the keyboard, providing quick access to common C symbols.
+private class SymbolInputAccessoryView: UIView {
+    weak var targetTextView: UITextView?
+
+    init(target: UITextView) {
+        self.targetTextView = target
+        super.init(frame: .zero)
+        self.autoresizingMask = .flexibleHeight
+        setupView()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override var intrinsicContentSize: CGSize {
+        return CGSize(width: UIView.noIntrinsicMetric, height: 44)
+    }
+
+    private func setupView() {
+        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: 0, height: 44))
+        toolbar.autoresizingMask = .flexibleWidth
+        
+        let symbols = [
+            "{", "}", ";", "(", ")", "[", "]", "=", "+", "-", "*", "/", "%", "<", ">", "&", "|"
+        ]
+        
+        var items: [UIBarButtonItem] = []
+        
+        for symbol in symbols {
+            let button = UIBarButtonItem(title: symbol, style: .plain, target: self, action: #selector(symbolTapped(_:)))
+            items.append(button)
+            items.append(UIBarButtonItem(barButtonSystemItem: .fixedSpace, target: nil, action: nil))
+        }
+        
+        // Add a flexible space to push the last item to the right (optional, but good practice)
+        items.append(UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil))
+        
+        // Add a "Done" button to dismiss the keyboard
+        let doneButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneTapped))
+        items.append(doneButton)
+        
+        toolbar.items = items
+        addSubview(toolbar)
+        
+        // Constraints for the toolbar
+        toolbar.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            toolbar.topAnchor.constraint(equalTo: topAnchor),
+            toolbar.bottomAnchor.constraint(equalTo: bottomAnchor),
+            toolbar.leadingAnchor.constraint(equalTo: leadingAnchor),
+            toolbar.trailingAnchor.constraint(equalTo: trailingAnchor)
+        ])
+    }
+
+    @objc private func symbolTapped(_ sender: UIBarButtonItem) {
+        guard let textView = targetTextView, let symbol = sender.title else { return }
+        
+        // Insert the symbol at the current cursor position
+        textView.insertText(symbol)
+        
+        // Simple auto-closing logic for brackets/parentheses
+        if symbol == "{" {
+            textView.insertText("}")
+            // Move cursor back one position
+            if let newPosition = textView.selectedTextRange?.start {
+                let offset = textView.offset(from: textView.beginningOfDocument, to: newPosition)
+                let newCursorPosition = textView.position(from: textView.beginningOfDocument, offset: offset - 1)
+                textView.selectedTextRange = textView.textRange(from: newCursorPosition!, to: newCursorPosition!)
+            }
+        } else if symbol == "(" {
+            textView.insertText(")")
+            if let newPosition = textView.selectedTextRange?.start {
+                let offset = textView.offset(from: textView.beginningOfDocument, to: newPosition)
+                let newCursorPosition = textView.position(from: textView.beginningOfDocument, offset: offset - 1)
+                textView.selectedTextRange = textView.textRange(from: newCursorPosition!, to: newCursorPosition!)
+            }
+        } else if symbol == "[" {
+            textView.insertText("]")
+            if let newPosition = textView.selectedTextRange?.start {
+                let offset = textView.offset(from: textView.beginningOfDocument, to: newPosition)
+                let newCursorPosition = textView.position(from: textView.beginningOfDocument, offset: offset - 1)
+                textView.selectedTextRange = textView.textRange(from: newCursorPosition!, to: newCursorPosition!)
+            }
+        }
+    }
+
+    @objc private func doneTapped() {
+        targetTextView?.resignFirstResponder()
+    }
+}
+
 // MARK: - Code Editor View (UIViewRepresentable)
+
+/// A custom UIView that hosts the UITextView and a line number gutter.
+private class CodeEditorHostView: UIView {
+    let textView: UITextView
+    let lineNumberGutter: LineNumberGutterView
+    var errorLine: Int?
+
+    init(text: Binding<String>, coordinator: CodeEditorView.Coordinator, errorLine: Int?) {
+        self.textView = UITextView()
+        self.lineNumberGutter = LineNumberGutterView(textView: textView)
+        self.errorLine = errorLine
+        super.init(frame: .zero)
+
+        // Configure TextView
+        textView.autocapitalizationType = .none
+        textView.autocorrectionType = .no
+        textView.smartQuotesType = .no
+        textView.smartDashesType = .no
+        textView.smartInsertDeleteType = .no
+        textView.isScrollEnabled = true
+        textView.backgroundColor = .systemBackground
+        textView.layer.cornerRadius = 8
+        textView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Add subviews
+        addSubview(lineNumberGutter)
+        addSubview(textView)
+
+        // Constraints
+        NSLayoutConstraint.activate([
+            // Gutter constraints
+            lineNumberGutter.topAnchor.constraint(equalTo: topAnchor),
+            lineNumberGutter.bottomAnchor.constraint(equalTo: bottomAnchor),
+            lineNumberGutter.leadingAnchor.constraint(equalTo: leadingAnchor),
+            lineNumberGutter.widthAnchor.constraint(equalToConstant: 40),
+
+            // TextView constraints
+            textView.topAnchor.constraint(equalTo: topAnchor),
+            textView.bottomAnchor.constraint(equalTo: bottomAnchor),
+            textView.trailingAnchor.constraint(equalTo: trailingAnchor),
+            textView.leadingAnchor.constraint(equalTo: lineNumberGutter.trailingAnchor, constant: -8) // Overlap for seamless look
+        ])
+        
+        // Adjust text container inset to make space for the gutter
+        textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 12, right: 8)
+        
+        // Set initial text and highlight
+        textView.attributedText = CSyntaxHighlighter.highlight(text: text.wrappedValue, errorLine: errorLine)
+        
+        // Set up scroll synchronization
+        textView.delegate = coordinator
+        
+        // Set up input accessory view
+        textView.inputAccessoryView = SymbolInputAccessoryView(target: textView)
+        
+        // Initial update of line numbers
+        lineNumberGutter.updateLineNumbers()
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+}
+
+/// A simple view to draw line numbers.
+private class LineNumberGutterView: UIView {
+    weak var textView: UITextView?
+    
+    init(textView: UITextView) {
+        self.textView = textView
+        super.init(frame: .zero)
+        self.backgroundColor = .secondarySystemBackground
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    func updateLineNumbers() {
+        guard let textView = textView else { return }
+        
+        // Clear existing labels
+        subviews.forEach { $0.removeFromSuperview() }
+        
+        let text = textView.text ?? ""
+        let lines = text.components(separatedBy: .newlines)
+        let font = UIFont.monospacedSystemFont(ofSize: 14, weight: .regular)
+        let lineHeight = font.lineHeight
+        
+        // Calculate the starting Y offset based on the text view's content inset and scroll offset
+        var yOffset: CGFloat = textView.textContainerInset.top - textView.contentOffset.y
+        
+        for (index, _) in lines.enumerated() {
+            let lineNumber = index + 1
+            let label = UILabel()
+            label.text = "\(lineNumber)"
+            label.font = font
+            label.textColor = .tertiaryLabel
+            label.textAlignment = .right
+            
+            let labelHeight = lineHeight
+            let labelY = yOffset + (lineHeight - labelHeight) / 2
+            label.frame = CGRect(x: 0, y: labelY, width: bounds.width - 8, height: labelHeight)
+            
+            // Only add labels that are visible or near visible
+            if labelY + labelHeight > 0 && labelY < bounds.height {
+                addSubview(label)
+            }
+            
+            yOffset += lineHeight
+        }
+    }
+}
 
 struct CodeEditorView: UIViewRepresentable {
     @Binding var text: String
+    var errorLine: Int?
 
-    func makeUIView(context: Context) -> UITextView {
-        let textView = UITextView()
-        textView.delegate = context.coordinator
-        textView.autocapitalizationType = .none
-        textView.autocorrectionType = .no
-        textView.isScrollEnabled = true
-        textView.backgroundColor = .systemBackground // System-adaptive background for code editor
-        textView.layer.cornerRadius = 8
-        textView.textContainerInset = UIEdgeInsets(top: 12, left: 8, bottom: 12, right: 8)
-        textView.attributedText = CSyntaxHighlighter.highlight(text: text)
-        return textView
+    func makeUIView(context: Context) -> CodeEditorHostView {
+        let hostView = CodeEditorHostView(text: $text, coordinator: context.coordinator, errorLine: errorLine)
+        return hostView
     }
 
-    func updateUIView(_ uiView: UITextView, context: Context) {
-        guard uiView.text != text else { return }
-        let selectedRange = uiView.selectedTextRange
-        uiView.attributedText = CSyntaxHighlighter.highlight(text: text)
-        uiView.selectedTextRange = selectedRange
+    func updateUIView(_ uiView: CodeEditorHostView, context: Context) {
+        uiView.errorLine = errorLine
+        if uiView.textView.text != text || errorLine != nil {
+            let selectedRange = uiView.textView.selectedTextRange
+            uiView.textView.attributedText = CSyntaxHighlighter.highlight(text: text, errorLine: errorLine)
+            uiView.textView.selectedTextRange = selectedRange
+        }
+        uiView.lineNumberGutter.updateLineNumbers()
+        if let errorLine {
+            scroll(textView: uiView.textView, toLine: errorLine)
+        }
     }
 
     func makeCoordinator() -> Coordinator {
@@ -138,8 +365,85 @@ struct CodeEditorView: UIViewRepresentable {
         func textViewDidChange(_ textView: UITextView) {
             parent.text = textView.text
             let selectedRange = textView.selectedTextRange
-            textView.attributedText = CSyntaxHighlighter.highlight(text: textView.text)
+            textView.attributedText = CSyntaxHighlighter.highlight(text: textView.text, errorLine: parent.errorLine)
             textView.selectedTextRange = selectedRange
+            
+            // Force update line numbers on text change
+            if let hostView = textView.superview as? CodeEditorHostView {
+                hostView.lineNumberGutter.updateLineNumbers()
+            }
+        }
+        
+        func scrollViewDidScroll(_ scrollView: UIScrollView) {
+            // Synchronize the gutter's scroll position
+            if let hostView = scrollView.superview as? CodeEditorHostView {
+                hostView.lineNumberGutter.updateLineNumbers()
+            }
+        }
+
+        func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+            // Auto-indent on newline
+            if text == "\n" {
+                let ns = textView.text as NSString? ?? "" as NSString
+                let beforeRange = NSRange(location: 0, length: range.location)
+                let beforeText = ns.substring(with: beforeRange)
+                if let lastNewline = beforeText.lastIndex(of: "\n") {
+                    let lineStart = beforeText.index(after: lastNewline)
+                    let currentLine = String(beforeText[lineStart..<beforeText.endIndex])
+                    let indentPrefix = currentLine.prefix { $0 == "\t" || $0 == " " }
+                    var extraIndent = ""
+                    if currentLine.trimmingCharacters(in: .whitespaces).hasSuffix("{") {
+                        extraIndent = "    "
+                    }
+                    let insertion = "\n" + String(indentPrefix) + extraIndent
+                    if let textRange = Range(range, in: textView.text) {
+                        // Replace manually to preserve attributes
+                        let mutable = NSMutableAttributedString(attributedString: textView.attributedText)
+                        mutable.replaceCharacters(in: range, with: insertion)
+                        textView.attributedText = mutable
+                        // Move cursor
+                        let pos = range.location + (insertion as NSString).length
+                        if let start = textView.position(from: textView.beginningOfDocument, offset: pos) {
+                            textView.selectedTextRange = textView.textRange(from: start, to: start)
+                        }
+                        self.textViewDidChange(textView)
+                        return false
+                    }
+                }
+            }
+            // Auto-pair common characters
+            let pairs: [String: String] = ["(": ")", "[": "]", "{": "}", "\"": "\"", "'": "'"]
+            if let closing = pairs[text], let selectedRange = textView.selectedTextRange, selectedRange.isEmpty {
+                let insertion = text + closing
+                let caretAdvance = (text as NSString).length
+                let mutable = NSMutableAttributedString(attributedString: textView.attributedText)
+                mutable.replaceCharacters(in: range, with: insertion)
+                textView.attributedText = mutable
+                let newOffset = range.location + caretAdvance
+                if let start = textView.position(from: textView.beginningOfDocument, offset: newOffset) {
+                    textView.selectedTextRange = textView.textRange(from: start, to: start)
+                }
+                self.textViewDidChange(textView)
+                return false
+            }
+            return true
+        }
+    }
+
+    private func scroll(textView: UITextView, toLine line: Int) {
+        let text = textView.text as NSString? ?? "" as NSString
+        var currentLine = 1
+        var location = 0
+        let length = text.length
+        while currentLine < line && location < length {
+            let r = text.range(of: "\n", options: [], range: NSRange(location: location, length: length - location))
+            if r.location == NSNotFound { break }
+            location = r.location + 1
+            currentLine += 1
+        }
+        if currentLine == line {
+            let range = NSRange(location: location, length: 0)
+            textView.scrollRangeToVisible(range)
         }
     }
 }
@@ -164,15 +468,107 @@ struct CEditorView: View {
     @State private var consoleOutput: String = "Tap Run to execute your program offline."
     @State private var warnings: [String] = []
     @State private var errorMessage: String?
+    @State private var errorLine: Int?
     @State private var duration: TimeInterval?
     @State private var lastRunDate: Date?
     @State private var isRunning = false
+    @State private var lastLoadedCode: String = CEditorView.template
+    @State private var pendingSample: SampleProgram?
+    @State private var showReplaceConfirm = false
+
+    struct SampleProgram: Identifiable, Hashable {
+        let id = UUID()
+        let title: String
+        let code: String
+    }
+
+    private let samples: [SampleProgram] = [
+        SampleProgram(
+            title: "Hello World",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                printf("Hello, world!\\n");
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "For Loop Sum",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int sum = 0;
+                for (int i = 1; i <= 10; i += 1) {
+                    sum += i;
+                }
+                printf("Sum 1..10 = %d\\n", sum);
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "If/Else",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int x = 7;
+                if (x % 2 == 0) {
+                    printf("%d is even\\n", x);
+                } else {
+                    printf("%d is odd\\n", x);
+                }
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Fibonacci",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int n = 10;
+                int a = 0, b = 1;
+                printf("Fibonacci: ");
+                for (int i = 0; i < n; i += 1) {
+                    printf("%d ", a);
+                    int next = a + b;
+                    a = b;
+                    b = next;
+                }
+                printf("\\n");
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Array Average",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int values[5] = {1, 3, 5, 7, 9};
+                int sum = 0;
+                for (int i = 0; i < 5; i += 1) {
+                    sum += values[i];
+                }
+                int avg = sum / 5;
+                printf("Average = %d\\n", avg);
+                return 0;
+            }
+            """
+        )
+    ]
 
     var body: some View {
         VStack(spacing: 0) {
             header
             Divider()
-            CodeEditorView(text: $code)
+            CodeEditorView(text: $code, errorLine: errorLine)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .padding(.horizontal)
                 .padding(.top, 12)
@@ -182,8 +578,19 @@ struct CEditorView: View {
         .navigationTitle("C Sandbox")
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
+                Menu {
+                    ForEach(samples) { sample in
+                        Button(sample.title) {
+                            select(sample)
+                        }
+                    }
+                } label: {
+                    Label("Samples", systemImage: "book")
+                }
+
                 Button("Reset") {
                     code = CEditorView.template
+                    lastLoadedCode = CEditorView.template
                 }
                 .disabled(isRunning)
 
@@ -275,6 +682,7 @@ struct CEditorView: View {
         let source = code
         isRunning = true
         errorMessage = nil
+        errorLine = nil
         warnings.removeAll()
         duration = nil
         consoleOutput = ""
@@ -290,11 +698,57 @@ struct CEditorView: View {
                     consoleOutput = execution.output
                     warnings = execution.warnings
                     duration = execution.duration
+                    lastLoadedCode = source
                 case .failure(let error):
                     errorMessage = error.localizedDescription
+                    // Extract line number when available
+                    switch error {
+                    case .syntax(_, let line), .runtime(_, let line):
+                        errorLine = line
+                    default:
+                        break
+                    }
                 }
             }
         }
+    }
+
+    private func select(_ sample: SampleProgram) {
+        // Ask before replacing if there are unsaved edits
+        if code != lastLoadedCode && !code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            pendingSample = sample
+            showReplaceConfirm = true
+        } else {
+            apply(sample)
+        }
+    }
+
+    private func apply(_ sample: SampleProgram) {
+        code = sample.code
+        lastLoadedCode = sample.code
+        errorMessage = nil
+        errorLine = nil
+        warnings.removeAll()
+    }
+}
+
+extension CEditorView {
+    @ViewBuilder
+    var replaceConfirmation: some View {
+        EmptyView()
+            .confirmationDialog(
+                "Replace current code with sample?",
+                isPresented: $showReplaceConfirm,
+                titleVisibility: .visible
+            ) {
+                Button("Replace", role: .destructive) {
+                    if let s = pendingSample { apply(s) }
+                    pendingSample = nil
+                }
+                Button("Cancel", role: .cancel) {
+                    pendingSample = nil
+                }
+            }
     }
 }
 

@@ -1,0 +1,52 @@
+11s
+Run set -euo pipefail
+Command line invocation:
+    /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/xcodebuild archive -project Run-C.xcodeproj -scheme Run-C -configuration Release -destination generic/platform=iOS -archivePath /Users/runner/work/_temp/Run-C-Release.xcarchive CODE_SIGN_STYLE=Manual "CODE_SIGN_IDENTITY=iOS Distribution" PROVISIONING_PROFILE_SPECIFIER=pythonchefiosditribution DEVELOPMENT_TEAM=*** CURRENT_PROJECT_VERSION=202510261611
+
+Build settings from command line:
+    CODE_SIGN_IDENTITY = iOS Distribution
+    CODE_SIGN_STYLE = Manual
+    CURRENT_PROJECT_VERSION = 202510261611
+    DEVELOPMENT_TEAM = ***
+    PROVISIONING_PROFILE_SPECIFIER = pythonchefiosditribution
+
+note: Using codesigning identity override: iOS Distribution
+ComputePackagePrebuildTargetDependencyGraph
+
+Prepare packages
+
+CreateBuildRequest
+
+SendProjectDescription
+
+CreateBuildOperation
+
+ComputeTargetDependencyGraph
+note: Building targets in dependency order
+note: Target dependency graph (1 target)
+    Target 'NotesApp' in project 'Run-C' (no dependencies)
+
+GatherProvisioningInputs
+
+CreateBuildDescription
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/runc/runc/Run-C/Assets.xcassets
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -x c -c /dev/null
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --version --output-format xml1
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
+
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
+
+Build description signature: 7be49f5ac74645edc4cf31885ea1a74f
+** ARCHIVE FAILED **
+Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/XCBuildData/7be49f5ac74645edc4cf31885ea1a74f.xcbuilddata
+
+/Users/runner/work/runc/runc/Run-C.xcodeproj: error: No certificate for team '***' matching 'iOS Distribution' found: Select a different signing certificate for CODE_SIGN_IDENTITY, a team that matches your selected certificate, or switch to automatic provisioning. (in target 'NotesApp' from project 'Run-C')
+
+The following build commands failed:
+	Archiving project Run-C with scheme Run-C
+(1 failure)
+Error: Process completed with exit code 65.

@@ -9,17 +9,19 @@ struct CExecutionResult {
 
 /// Domain errors that can be raised when compiling/executing code.
 enum CCompilerError: LocalizedError {
-    case syntax(message: String)
-    case runtime(message: String)
+    case syntax(message: String, lineNumber: Int?)
+    case runtime(message: String, lineNumber: Int?)
     case unsupported(message: String)
     case internalError(message: String)
 
     var errorDescription: String? {
         switch self {
-        case .syntax(let message):
-            return "Syntax error: \(message)"
-        case .runtime(let message):
-            return "Runtime error: \(message)"
+        case .syntax(let message, let lineNumber):
+            let lineText = lineNumber.map { " on line \($0)" } ?? ""
+            return "Syntax error\(lineText): \(message)"
+        case .runtime(let message, let lineNumber):
+            let lineText = lineNumber.map { " on line \($0)" } ?? ""
+            return "Runtime error\(lineText): \(message)"
         case .unsupported(let message):
             return "Unsupported feature: \(message)"
         case .internalError(let message):
@@ -53,6 +55,13 @@ final class OfflineCCompiler {
     private func preprocess(source: String) -> String {
         source
             .replacingOccurrences(of: "\r\n", with: "\n")
+            // Normalize curly quotes and dashes that iOS keyboards may insert
+            .replacingOccurrences(of: "\u{201C}", with: "\"") // “
+            .replacingOccurrences(of: "\u{201D}", with: "\"") // ”
+            .replacingOccurrences(of: "\u{2018}", with: "'")   // ‘
+            .replacingOccurrences(of: "\u{2019}", with: "'")   // ’
+            .replacingOccurrences(of: "\u{2013}", with: "-")   // –
+            .replacingOccurrences(of: "\u{2014}", with: "-")   // —
             .components(separatedBy: .newlines)
             .filter { !$0.trimmingCharacters(in: .whitespaces).hasPrefix("#") }
             .joined(separator: "\n")
@@ -62,16 +71,17 @@ final class OfflineCCompiler {
 // MARK: - Lexer
 
 private enum Token: Equatable {
-    case keyword(String)
-    case identifier(String)
-    case number(Int)
-    case stringLiteral(String)
-    case symbol(String)
+    case keyword(String, lineNumber: Int)
+    case identifier(String, lineNumber: Int)
+    case number(Int, lineNumber: Int)
+    case stringLiteral(String, lineNumber: Int)
+    case symbol(String, lineNumber: Int)
 }
 
 private struct CLexer {
     private let characters: [Character]
     private var index: Int = 0
+    private(set) var lineNumber: Int = 1
 
     private static let keywords: Set<String> = [
         "int", "return", "if", "else", "while", "for", "break", "continue"
@@ -120,46 +130,49 @@ private struct CLexer {
                 continue
             }
 
-            if let symbol = readSymbol() {
-                tokens.append(.symbol(symbol))
+            if let token = readSymbol() {
+                tokens.append(token)
                 continue
             }
 
-            throw CCompilerError.syntax(message: "Unexpected character '\(current)'")
+            throw CCompilerError.syntax(message: "Unexpected character '\(current)'", lineNumber: lineNumber)
         }
 
         return tokens
     }
 
     private mutating func readNumber() -> Token {
+        let startLine = lineNumber
         var value = ""
         while let current = peek(), current.isNumber {
             value.append(current)
             _ = advance()
         }
-        return .number(Int(value) ?? 0)
+        return .number(Int(value) ?? 0, lineNumber: startLine)
     }
 
     private mutating func readIdentifier() -> Token {
+        let startLine = lineNumber
         var value = ""
         while let current = peek(), current.isLetter || current.isNumber || current == "_" {
             value.append(current)
             _ = advance()
         }
         if CLexer.keywords.contains(value) {
-            return .keyword(value)
+            return .keyword(value, lineNumber: startLine)
         } else {
-            return .identifier(value)
+            return .identifier(value, lineNumber: startLine)
         }
     }
 
     private mutating func readStringLiteral() throws -> Token {
+        let startLine = lineNumber
         _ = advance() // Opening quote
         var buffer = ""
         while let current = peek() {
             if current == "\"" {
                 _ = advance()
-                return .stringLiteral(buffer)
+                return .stringLiteral(buffer, lineNumber: startLine)
             }
 
             if current == "\\" {
@@ -182,17 +195,18 @@ private struct CLexer {
             buffer.append(current)
             _ = advance()
         }
-        throw CCompilerError.syntax(message: "Unterminated string literal")
+        throw CCompilerError.syntax(message: "Unterminated string literal", lineNumber: lineNumber)
     }
 
-    private mutating func readSymbol() -> String? {
+    private mutating func readSymbol() -> Token? {
+        let startLine = lineNumber
         if let compound = CLexer.compoundSymbols.first(where: matches(symbol:)) {
             index += compound.count
-            return compound
+            return .symbol(compound, lineNumber: startLine)
         }
 
         guard let char = advance() else { return nil }
-        return String(char)
+        return .symbol(String(char), lineNumber: startLine)
     }
 
     private func matches(symbol: String) -> Bool {
@@ -218,7 +232,7 @@ private struct CLexer {
             }
             index += 1
         }
-        throw CCompilerError.syntax(message: "Unterminated block comment")
+        throw CCompilerError.syntax(message: "Unterminated block comment", lineNumber: lineNumber)
     }
 
     private func peek(aheadBy offset: Int = 0) -> Character? {
@@ -232,6 +246,9 @@ private struct CLexer {
         guard index < characters.count else { return nil }
         let char = characters[index]
         index += 1
+        if char == "\n" {
+            lineNumber += 1
+        }
         return char
     }
 }
@@ -292,10 +309,10 @@ private struct CParser {
     mutating func parseProgram() throws -> [Statement] {
         _ = consumeNewlines()
         guard match(keyword: "int") else {
-            throw CCompilerError.syntax(message: "Entry point must start with 'int main()'")
+            throw CCompilerError.syntax(message: "Entry point must start with 'int main()'", lineNumber: currentLineNumber)
         }
-        guard case .identifier("main")? = advance() else {
-            throw CCompilerError.syntax(message: "Expected 'main' function")
+        guard case .identifier("main", _)? = advance() else {
+            throw CCompilerError.syntax(message: "Expected 'main' function", lineNumber: currentLineNumber)
         }
         try consumeParameterList()
         return try parseBlock()
@@ -303,14 +320,13 @@ private struct CParser {
 
     private mutating func consumeParameterList() throws {
         guard match(symbol: "(") else {
-            throw CCompilerError.syntax(message: "Expected '(' after main")
+            throw CCompilerError.syntax(message: "Expected '(' after main", lineNumber: currentLineNumber)
         }
         var depth = 1
         while depth > 0 {
-            guard let token = advance() else {
-                throw CCompilerError.syntax(message: "Unterminated parameter list")
-            }
-            if case .symbol("(") = token {
+                            guard let token = advance() else {
+                                throw CCompilerError.syntax(message: "Unterminated parameter list", lineNumber: currentLineNumber)
+                            }            if case .symbol("(") = token {
                 depth += 1
             } else if case .symbol(")") = token {
                 depth -= 1
@@ -320,12 +336,12 @@ private struct CParser {
 
     private mutating func parseBlock() throws -> [Statement] {
         guard match(symbol: "{") else {
-            throw CCompilerError.syntax(message: "Expected '{' to start block")
+            throw CCompilerError.syntax(message: "Expected '{' to start block", lineNumber: currentLineNumber)
         }
         var statements: [Statement] = []
         while !check(symbol: "}") {
             if isAtEnd {
-                throw CCompilerError.syntax(message: "Unterminated block")
+                throw CCompilerError.syntax(message: "Unterminated block", lineNumber: currentLineNumber)
             }
             statements.append(try parseStatement())
         }
@@ -376,8 +392,8 @@ private struct CParser {
     }
 
     private mutating func parseDeclaration(expectTerminator: Bool = true) throws -> Statement {
-        guard case .identifier(let name)? = advance() else {
-            throw CCompilerError.syntax(message: "Expected identifier after 'int'")
+        guard case .identifier(let name, _)? = advance() else {
+            throw CCompilerError.syntax(message: "Expected identifier after 'int'", lineNumber: currentLineNumber)
         }
         var initialValue: Expression?
         if match(symbol: "=") {
@@ -603,8 +619,9 @@ private struct CParser {
     }
 
     private mutating func consume(symbol: String) throws {
+        let line = currentLineNumber
         guard match(symbol: symbol) else {
-            throw CCompilerError.syntax(message: "Expected '\(symbol)'")
+            throw CCompilerError.syntax(message: "Expected '\(symbol)'", lineNumber: line)
         }
     }
 
@@ -623,6 +640,14 @@ private struct CParser {
     private func check(symbol: String) -> Bool {
         guard case .symbol(let value)? = peek() else { return false }
         return value == symbol
+    }
+
+    private var currentLineNumber: Int? {
+        guard let token = peek() else { return nil }
+        switch token {
+        case .keyword(_, let line), .identifier(_, let line), .number(_, let line), .stringLiteral(_, let line), .symbol(_, let line):
+            return line
+        }
     }
 
     private var isAtEnd: Bool {
