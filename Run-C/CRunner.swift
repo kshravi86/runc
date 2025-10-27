@@ -327,9 +327,9 @@ private struct CParser {
             guard let token = advance() else {
                 throw CCompilerError.syntax(message: "Unterminated parameter list", lineNumber: currentLineNumber)
             }
-            if case .symbol("(") = token {
+            if case .symbol("(", _) = token {
                 depth += 1
-            } else if case .symbol(")") = token {
+            } else if case .symbol(")", _) = token {
                 depth -= 1
             }
         }
@@ -380,7 +380,7 @@ private struct CParser {
             return try parseForStatement()
         }
 
-        if case .identifier("printf")? = peek() {
+        if case .identifier("printf", _)? = peek() {
             _ = advance()
             return try parsePrintfCall()
         }
@@ -633,7 +633,7 @@ private struct CParser {
     }
 
     private mutating func match(keyword: String) -> Bool {
-        guard case .keyword(let value)? = peek(), value == keyword else { return false }
+        guard case .keyword(let value, _)? = peek(), value == keyword else { return false }
         _ = advance()
         return true
     }
@@ -689,7 +689,7 @@ private final class ExecutionContext {
                 return
             }
         }
-        throw CCompilerError.runtime(message: "Variable '\(name)' used before declaration")
+        throw CCompilerError.runtime(message: "Variable '\(name)' used before declaration", lineNumber: nil)
     }
 
     func value(of name: String) throws -> Int {
@@ -698,7 +698,7 @@ private final class ExecutionContext {
                 return value
             }
         }
-        throw CCompilerError.runtime(message: "Variable '\(name)' used before declaration")
+        throw CCompilerError.runtime(message: "Variable '\(name)' used before declaration", lineNumber: nil)
     }
 }
 

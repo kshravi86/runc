@@ -1,17 +1,8 @@
-
-Search logs
-2s
-2s
 0s
-1s
-3s
-0s
-0s
-10s
+12s
 Run set -euo pipefail
-  
 --- xcodebuild: WARNING: Using the first of multiple matching destinations:
-{ platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:baff069bb66828b82419db03db8eb3d567e2c6db, name:My Mac }
+{ platform:macOS, arch:arm64, variant:Designed for [iPad,iPhone], id:abb2b17dd0d0d79353c5be8d350a73d03ce2972b, name:My Mac }
 { platform:iOS, id:dvtdevice-DVTiPhonePlaceholder-iphoneos:placeholder, name:Any iOS Device }
 { platform:iOS Simulator, id:dvtdevice-DVTiOSDeviceSimulatorPlaceholder-iphonesimulator:placeholder, name:Any iOS Simulator Device }
 Bundle identifier detected: com.murugan.guha
@@ -35,7 +26,7 @@ Run xcodebuild -resolvePackageDependencies -project "$PROJECT" -scheme "$SCHEME"
 Command line invocation:
     /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/xcodebuild -resolvePackageDependencies -project Run-C.xcodeproj -scheme Run-C -clonedSourcePackagesDirPath /Users/runner/work/_temp/SPM
 resolved source packages: 
-25s
+23s
 Run set -o pipefail
   
 Command line invocation:
@@ -68,13 +59,13 @@ note: Target dependency graph (1 target)
     Target 'NotesApp' in project 'Run-C' (no dependencies)
 GatherProvisioningInputs
 CreateBuildDescription
-ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -x c -c /dev/null
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --print-asset-tag-combinations --output-format xml1 /Users/runner/work/runc/runc/Run-C/Assets.xcassets
+ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang -v -E -dM -isysroot /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -x c -c /dev/null
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool --version --output-format xml1
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc --version
 ExecuteExternalTool /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ld -version_details
-Build description signature: c68faf77b118bae9a3da57868bed4f89
-Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/XCBuildData/c68faf77b118bae9a3da57868bed4f89.xcbuilddata
+Build description signature: da02596d4f26271e6f4737386e1df461
+Build description path: /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/XCBuildData/da02596d4f26271e6f4737386e1df461.xcbuilddata
 CreateBuildDirectory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation
     cd /Users/runner/work/runc/runc/Run-C.xcodeproj
     builtin-create-build-directory /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation
@@ -191,7 +182,7 @@ GenerateAssetSymbols /Users/runner/work/runc/runc/Run-C/Assets.xcassets (in targ
 CompileAssetCatalogVariant thinned /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app /Users/runner/work/runc/runc/Run-C/Assets.xcassets (in target 'NotesApp' from project 'Run-C')
     cd /Users/runner/work/runc/runc
     /Applications/Xcode_26.0.1.app/Contents/Developer/usr/bin/actool /Users/runner/work/runc/runc/Run-C/Assets.xcassets --compile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned --output-format human-readable-text --notices --warnings --export-dependency-info /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_dependencies_thinned --output-partial-info-plist /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist_thinned --app-icon AppIcon --accent-color AccentColor -
-objc[1396]: Class _NoAnimationDelegate is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23A8464/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/Frameworks/SwiftUICore.framework/SwiftUICore (0x143618130) and /Library/Developer/CoreSimulator/Volumes/iOS_23A8464/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore (0x140781198). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
+objc[25405]: Class _NoAnimationDelegate is implemented in both /Library/Developer/CoreSimulator/Volumes/iOS_23A8464/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/Frameworks/SwiftUICore.framework/SwiftUICore (0x141a18130) and /Library/Developer/CoreSimulator/Volumes/iOS_23A8464/Library/Developer/CoreSimulator/Profiles/Runtimes/iOS 26.0.simruntime/Contents/Resources/RuntimeRoot/System/Library/PrivateFrameworks/UIKitCore.framework/UIKitCore (0x13eb81198). This may cause spurious casting failures and mysterious crashes. One of the duplicates must be removed or renamed.
 /* com.apple.actool.compilation-results */
 /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist_thinned
 /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned/AppIcon60x60@2x.png
@@ -203,21 +194,21 @@ SwiftDriver NotesApp normal arm64 com.apple.xcode.tools.swift.compiler (in targe
 SwiftDriver\ Compilation NotesApp normal arm64 com.apple.xcode.tools.swift.compiler (in target 'NotesApp' from project 'Run-C')
     cd /Users/runner/work/runc/runc
     builtin-Swift-Compilation -- /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc -module-name NotesApp -O -whole-module-optimization -enforce-exclusivity\=checked @/Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/NotesApp.SwiftFileList -enable-bare-slash-regex -enable-experimental-feature DebugDescriptionMacro -sdk /Applications/Xcode_26.0.1.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -target arm64-apple-ios17.0 -g -module-cache-path /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex -Xfrontend -serialize-debugging-options -swift-version 5 -I /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/BuildProductsPath/Release-iphoneos -F /Us
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stddef-BCN5UZKFGITR7ZRCKPL0XV6NH.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftShims-729RK0AG4RLNXRNPZ5CEVPYCL.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/DeveloperToolsSupport-HCZMCF2IFW7XDM9N7A06STUF.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdbool-BU6A90G0BL93UCVHPFOADHETH.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_float-DSICRM00A0IHM2RV3M1PUDXJC.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stddef-BCN5UZKFGITR7ZRCKPL0XV6NH.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_SwiftConcurrencyShims-ABAP3XK4FPZ0HOQN2OA37HGW1.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_AvailabilityInternal-3ATYOQX7Y8FLM8A2YCZJ3XY20.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ptrauth-DNC48MLQZWYGD5SJ5HWZM6P46.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ptrcheck-CSG821Y62FW54DU5Q3NJ3BXXK.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdarg-9Y4GU7MTA8DBNH1PACULN7G8Y.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ptrcheck-CSG821Y62FW54DU5Q3NJ3BXXK.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ptrauth-DNC48MLQZWYGD5SJ5HWZM6P46.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_AvailabilityInternal-3ATYOQX7Y8FLM8A2YCZJ3XY20.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation1-C4GMY5GJL27V67BC5GLXL6RIS.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftShims-729RK0AG4RLNXRNPZ5CEVPYCL.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation2-6ADNO32KZEHEK53UWCW60DAFQ.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_limits-586IO2Q4GEPFTFV4IRQ5FNWRR.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/sys_types-5HXOG0DU2OYW3S1Q29RL7PL63.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation2-6ADNO32KZEHEK53UWCW60DAFQ.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_tgmath-3ZF2NMDBDQQN37E1XMTYNAQ0Y.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/sys_types-5HXOG0DU2OYW3S1Q29RL7PL63.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_stdint-379KIWUSTSQGLC7FGPEAQ6AS7.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_Builtin_intrinsics-30WBM5K2R1MC2I220BS6KD47Z.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/_DarwinFoundation3-JD4MMCU08CNDI8D8QFYVZDC3.pcm
@@ -230,45 +221,45 @@ SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/D
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/os_object-AUJ0U64R0QIXXA4LPBV6Y91FB.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/os_workgroup-COJ7YOPUPZLAQNEZAX23Y4ZE4.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Dispatch-7KNT5O4HDUREECLDI0GL3OEQ6.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreFoundation-2L4O5SIVVNW7M5P87T1XF5OYI.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/XPC-D51TOL6KMG2RGCWCH2BXI93P.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Spatial-2K78JFZ044PP6X7943F0JL00H.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/XPC-D51TOL6KMG2RGCWCH2BXI93P.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreFoundation-2L4O5SIVVNW7M5P87T1XF5OYI.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/os-EWI5QL6OJBTUQZKNMKOMU4GWF.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreGraphics-9TSHA2JH95RH8D9QYN7DFV8QT.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Security-9VFL9IB8YO33PBBJHPU1YBEVE.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreGraphics-9TSHA2JH95RH8D9QYN7DFV8QT.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CFNetwork-DTTIM1ZKDYDUINM30JGIYEV8X.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreText-A9M3SPGAPV3SY7YHHIO5JWX8H.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/ImageIO-AIXE908AL0IQ02V7C59YWKYOV.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Foundation-A95BH4TQXZVOJUCJN0DIP56BB.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UserNotifications-1Y7EX84IYVX9YSZQANX8V93XQ.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UIUtilities-DTLAW841QZLFVKVXH2ED11ZC0.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UniformTypeIdentifiers-47LXFV6O1V36Q1912GEWOLFNA.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/FileProvider-EWJIZAIZUERRXMTQ3TTYW7EPT.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/IOSurface-9YMPTTCBKQ8SN5R8D0K704TC1.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Symbols-2FZB5AB69AFXFHU8B3M56Y7NB.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/OpenGLES-F2KFK56NZQ65D0H35CC08GL13.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Metal-96BFSLK4OEZGZLY7WGCHZW1CS.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreData-4R5CXE55DPVEZ08F2ZM56N0HE.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UniformTypeIdentifiers-47LXFV6O1V36Q1912GEWOLFNA.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/OSLog-9PO079U4T1G1LP8S2YPUJWBZA.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Accessibility-72H5DGDZJSCOB9T48PC4RWGUR.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreVideo-4RQLPJW95GAI8M6EXQ0MYJLW7.pcm
-SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreTransferable-3IYPRRPKICF90NP07RDAUBV67.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/IOSurface-9YMPTTCBKQ8SN5R8D0K704TC1.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/FileProvider-EWJIZAIZUERRXMTQ3TTYW7EPT.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UIUtilities-DTLAW841QZLFVKVXH2ED11ZC0.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/OpenGLES-F2KFK56NZQ65D0H35CC08GL13.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/DataDetection-65QR7EQGZM8NPFAZ5CC20MEJF.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreTransferable-3IYPRRPKICF90NP07RDAUBV67.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Metal-96BFSLK4OEZGZLY7WGCHZW1CS.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/Symbols-2FZB5AB69AFXFHU8B3M56Y7NB.pcm
+SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreVideo-4RQLPJW95GAI8M6EXQ0MYJLW7.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/CoreImage-CI97WNAUXMED66ZKD7WAAHR6U.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/QuartzCore-5MBENFANP60MA955OZ6721AZV.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftUICore-3STSSDJJHXV1GLC66UKOTQU87.pcm
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/UIKit-DB427KMNGOPCV878UTWFYYT01.pcm
 LinkAssetCatalog /Users/runner/work/runc/runc/Run-C/Assets.xcassets (in target 'NotesApp' from project 'Run-C')
     cd /Users/runner/work/runc/runc
-    builtin-linkAssetCatalog --thinned /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned --thinned-dependencies /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Relea
-note: Emplaced /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/AppIcon60x60@2x.png (in target 'NotesApp' from project 'Run-C')
+[O    builtin-linkAssetCatalog --thinned /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_output/thinned --thinned-dependencies /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_dependencies_thinned --thinned-info-plist-content /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist_thinned --unthinned /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Relea
 note: Emplaced /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/Assets.car (in target 'NotesApp' from project 'Run-C')
+note: Emplaced /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/AppIcon60x60@2x.png (in target 'NotesApp' from project 'Run-C')
 note: Emplaced /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/AppIcon76x76@2x~ipad.png (in target 'NotesApp' from project 'Run-C')
 ProcessInfoPlistFile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/Info.plist /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/empty-NotesApp.plist (in target 'NotesApp' from project 'Run-C')
     cd /Users/runner/work/runc/runc
     builtin-infoPlistUtility /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/empty-NotesApp.plist -producttype com.apple.product-type.application -genpkginfo /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/InstallationBuildProductsLocation/Applications/NotesApp.app/PkgInfo -expandbuildsettings -format binary -platform iphoneos -additionalcontentfile /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/assetcatalog_generated_info.plist -requiredArchitecture arm64 -o /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/I
 SwiftExplicitDependencyGeneratePcm arm64 /Users/runner/Library/Developer/Xcode/DerivedData/ModuleCache.noindex/SwiftUI-CVPINHMD2655GQUYRFVEN7P12.pcm
-SwiftCompile normal arm64 Compiling\ CEditorView.swift,\ CRunner.swift,\ ContentView.swift,\ NotesAppApp.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/runc/runc/Run-C/CEditorView.swift /Users/runner/work/runc/runc/Run-C/CRunner.swift /Users/runner/work/runc/runc/Run-C/ContentView.swift /Users/runner/work/runc/runc/Run-C/NotesAppApp.swift /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.swift /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/Symbols.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/simd.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/Xco
+SwiftCompile normal arm64 Compiling\ CEditorView.swift,\ CRunner.swift,\ ContentView.swift,\ NotesAppApp.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/runc/runc/Run-C/CEditorView.swift /Users/runner/work/runc/runc/Run-C/CRunner.swift /Users/runner/work/runc/runc/Run-C/ContentView.swift /Users/runner/work/runc/runc/Run-C/NotesAppApp.swift /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.swift /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/UniformTypeIdentifiers.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/_DarwinFoundation2.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Cont
 CompileSwift normal arm64 (in target 'NotesApp' from project 'Run-C')
     cd /Users/runner/work/runc/runc
     
@@ -279,7 +270,7 @@ CompileSwift normal arm64 (in target 'NotesApp' from project 'Run-C')
 private class CodeEditorHostView: UIView {
               ^
 /Users/runner/work/runc/runc/Run-C/CEditorView.swift:341:10: error: method must be declared fileprivate because its parameter uses a private type
-    func updateUIView(_ uiView: CodeEditorHostView, context: Context) {
+[I    func updateUIView(_ uiView: CodeEditorHostView, context: Context) {
          ^                      ~~~~~~~~~~~~~~~~~~
 /Users/runner/work/runc/runc/Run-C/CEditorView.swift:220:15: note: type declared here
 private class CodeEditorHostView: UIView {
@@ -297,170 +288,6 @@ private class CodeEditorHostView: UIView {
 /Users/runner/work/runc/runc/Run-C/CRunner.swift:383:29: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
         if case .identifier("printf")? = peek() {
                             ^~~~~~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:410:32: warning: enum case 'identifier' has 2 associated values; matching them as a tuple is deprecated
-        guard case .identifier(let name)? = advance() else {
-                               ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:75:10: note: 'identifier(_:lineNumber:)' declared here
-    case identifier(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:411:71: error: missing argument for parameter 'lineNumber' in call
-            throw CCompilerError.syntax(message: "Expected identifier")
-                                                                      ^
-                                                                      , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:12:10: note: 'syntax(message:lineNumber:)' declared here
-    case syntax(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:416:64: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-            let increment = Expression.binary(lhs: .identifier(name), op: .add, rhs: .number(1))
-                                                               ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:417:38: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-            return .assignment(name: name, op: .assign, value: increment)
-                                     ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:422:64: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-            let decrement = Expression.binary(lhs: .identifier(name), op: .subtract, rhs: .number(1))
-                                                               ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:423:38: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-            return .assignment(name: name, op: .assign, value: decrement)
-                                     ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:426:28: warning: enum case 'symbol' has 2 associated values; matching them as a tuple is deprecated
-        guard case .symbol(let symbol)? = advance() else {
-                           ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:78:10: note: 'symbol(_:lineNumber:)' declared here
-    case symbol(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:427:107: error: missing argument for parameter 'lineNumber' in call
-            throw CCompilerError.syntax(message: "Expected assignment operator after identifier '\(name)'")
-                                                                                                          ^
-                                                                                                          , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:12:10: note: 'syntax(message:lineNumber:)' declared here
-    case syntax(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:432:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "=": assignmentOperator = .assign
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:433:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "+=": assignmentOperator = .add
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:434:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "-=": assignmentOperator = .subtract
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:435:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "*=": assignmentOperator = .multiply
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:436:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "/=": assignmentOperator = .divide
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:437:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "%=": assignmentOperator = .mod
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:447:34: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-        return .assignment(name: name, op: assignmentOperator, value: expression)
-                                 ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:452:35: warning: enum case 'stringLiteral' has 2 associated values; matching them as a tuple is deprecated
-        guard case .stringLiteral(let format)? = advance() else {
-                                  ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:77:10: note: 'stringLiteral(_:lineNumber:)' declared here
-    case stringLiteral(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:453:105: error: missing argument for parameter 'lineNumber' in call
-            throw CCompilerError.syntax(message: "printf expects a string literal as the first argument")
-                                                                                                        ^
-                                                                                                        , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:12:10: note: 'syntax(message:lineNumber:)' declared here
-    case syntax(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:461:32: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-        return .printf(format: format, arguments: arguments)
-                               ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:577:80: error: missing argument for parameter 'lineNumber' in call
-            throw CCompilerError.syntax(message: "Unexpected end of expression")
-                                                                               ^
-                                                                               , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:12:10: note: 'syntax(message:lineNumber:)' declared here
-    case syntax(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:580:22: warning: enum case 'number' has 2 associated values; matching them as a tuple is deprecated
-        case .number(let value):
-                     ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:76:10: note: 'number(_:lineNumber:)' declared here
-    case number(Int, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:582:26: warning: enum case 'identifier' has 2 associated values; matching them as a tuple is deprecated
-        case .identifier(let name):
-                         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:75:10: note: 'identifier(_:lineNumber:)' declared here
-    case identifier(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:581:28: error: cannot convert value of type '(Int, lineNumber: Int)' to expected argument type 'Int'
-            return .number(value)
-                           ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:583:32: error: cannot convert value of type '(String, lineNumber: Int)' to expected argument type 'String'
-            return .identifier(name)
-                               ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:585:82: error: missing argument for parameter 'lineNumber' in call
-            throw CCompilerError.syntax(message: "Unexpected token in expression")
-                                                                                 ^
-                                                                                 , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:12:10: note: 'syntax(message:lineNumber:)' declared here
-    case syntax(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:590:28: warning: enum case 'symbol' has 2 associated values; matching them as a tuple is deprecated
-        guard case .symbol(let symbol)? = peek() else { return nil }
-                           ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:78:10: note: 'symbol(_:lineNumber:)' declared here
-    case symbol(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:592:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "*": return .multiply
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:593:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "/": return .divide
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:594:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "%": return .mod
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:595:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "+": return .add
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:596:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "-": return .subtract
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:597:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "<": return .lessThan
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:598:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "<=": return .lessThanOrEqual
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:599:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case ">": return .greaterThan
-             ^~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:600:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case ">=": return .greaterThanOrEqual
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:601:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "==": return .equal
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:602:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "!=": return .notEqual
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:603:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "&&": return .logicalAnd
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:604:14: error: expression pattern of type 'String' cannot match values of type '(String, lineNumber: Int)'
-        case "||": return .logicalOr
-             ^~~~
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:630:28: warning: enum case 'symbol' has 2 associated values; matching them as a tuple is deprecated
-        guard case .symbol(let value)? = peek(), value == symbol else { return false }
-                           ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:78:10: note: 'symbol(_:lineNumber:)' declared here
-    case symbol(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:630:56: error: binary operator '==' cannot be applied to operands of type '(String, lineNumber: Int)' and 'String'
-        guard case .symbol(let value)? = peek(), value == symbol else { return false }
-                                                       ^
-Swift.StringProtocol:1:11: note: candidate requires that '(String, lineNumber: Int)' conform to 'StringProtocol' (requirement specified as 'Self' : 'StringProtocol')
-extension StringProtocol {
-          ^
 /Users/runner/work/runc/runc/Run-C/CRunner.swift:636:29: warning: enum case 'keyword' has 2 associated values; matching them as a tuple is deprecated
         guard case .keyword(let value)? = peek(), value == keyword else { return false }
                             ^
@@ -470,18 +297,6 @@ extension StringProtocol {
 /Users/runner/work/runc/runc/Run-C/CRunner.swift:636:57: error: binary operator '==' cannot be applied to operands of type '(String, lineNumber: Int)' and 'String'
         guard case .keyword(let value)? = peek(), value == keyword else { return false }
                                                         ^
-Swift.StringProtocol:1:11: note: candidate requires that '(String, lineNumber: Int)' conform to 'StringProtocol' (requirement specified as 'Self' : 'StringProtocol')
-extension StringProtocol {
-          ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:642:28: warning: enum case 'symbol' has 2 associated values; matching them as a tuple is deprecated
-        guard case .symbol(let value)? = peek() else { return false }
-                           ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:78:10: note: 'symbol(_:lineNumber:)' declared here
-    case symbol(String, lineNumber: Int)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:643:22: error: binary operator '==' cannot be applied to operands of type '(String, lineNumber: Int)' and 'String'
-        return value == symbol
-                     ^
 Swift.StringProtocol:1:11: note: candidate requires that '(String, lineNumber: Int)' conform to 'StringProtocol' (requirement specified as 'Self' : 'StringProtocol')
 extension StringProtocol {
           ^
@@ -499,39 +314,11 @@ extension StringProtocol {
 /Users/runner/work/runc/runc/Run-C/CRunner.swift:13:10: note: 'runtime(message:lineNumber:)' declared here
     case runtime(message: String, lineNumber: Int?)
          ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:752:95: error: missing argument for parameter 'lineNumber' in call
-                guard rhs != 0 else { throw CCompilerError.runtime(message: "Division by zero") }
-                                                                                              ^
-                                                                                              , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:13:10: note: 'runtime(message:lineNumber:)' declared here
-    case runtime(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:755:93: error: missing argument for parameter 'lineNumber' in call
-                guard rhs != 0 else { throw CCompilerError.runtime(message: "Modulo by zero") }
-                                                                                            ^
-                                                                                            , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:13:10: note: 'runtime(message:lineNumber:)' declared here
-    case runtime(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:843:97: error: missing argument for parameter 'lineNumber' in call
-                guard right != 0 else { throw CCompilerError.runtime(message: "Division by zero") }
-                                                                                                ^
-                                                                                                , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:13:10: note: 'runtime(message:lineNumber:)' declared here
-    case runtime(message: String, lineNumber: Int?)
-         ^
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:846:95: error: missing argument for parameter 'lineNumber' in call
-                guard right != 0 else { throw CCompilerError.runtime(message: "Modulo by zero") }
-                                                                                              ^
-                                                                                              , lineNumber: <#Int?#>
-/Users/runner/work/runc/runc/Run-C/CRunner.swift:13:10: note: 'runtime(message:lineNumber:)' declared here
-    case runtime(message: String, lineNumber: Int?)
-         ^
 Failed frontend command:
 /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swift-frontend -frontend -c /Users/runner/work/runc/runc/Run-C/CEditorView.swift /Users/runner/work/runc/runc/Run-C/CRunner.swift /Users/runner/work/runc/runc/Run-C/ContentView.swift /Users/runner/work/runc/runc/Run-C/NotesAppApp.swift /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.swift -supplementary-output-file-map /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/Objects-normal/arm64/supplementaryOutputs-1 -emit-localized-strings -emit-localized-strings-path /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermedia
 ** ARCHIVE FAILED **
 The following build commands failed:
 	CompileSwift normal arm64 (in target 'NotesApp' from project 'Run-C')
-	SwiftCompile normal arm64 Compiling\ CEditorView.swift,\ CRunner.swift,\ ContentView.swift,\ NotesAppApp.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/runc/runc/Run-C/CEditorView.swift /Users/runner/work/runc/runc/Run-C/CRunner.swift /Users/runner/work/runc/runc/Run-C/ContentView.swift /Users/runner/work/runc/runc/Run-C/NotesAppApp.swift /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.swift /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/Symbols.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/simd.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/Xc
+	SwiftCompile normal arm64 Compiling\ CEditorView.swift,\ CRunner.swift,\ ContentView.swift,\ NotesAppApp.swift,\ GeneratedAssetSymbols.swift /Users/runner/work/runc/runc/Run-C/CEditorView.swift /Users/runner/work/runc/runc/Run-C/CRunner.swift /Users/runner/work/runc/runc/Run-C/ContentView.swift /Users/runner/work/runc/runc/Run-C/NotesAppApp.swift /Users/runner/Library/Developer/Xcode/DerivedData/Run-C-dilnxhyshvxtzabdtqqbeuvxrwol/Build/Intermediates.noindex/ArchiveIntermediates/Run-C/IntermediateBuildFilesPath/Run-C.build/Release-iphoneos/NotesApp.build/DerivedSources/GeneratedAssetSymbols.swift /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/UniformTypeIdentifiers.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift/iphoneos/prebuilt-modules/26.0/_DarwinFoundation2.swiftmodule/arm64e-apple-ios.swiftmodule /Applications/Xcode_26.0.1.app/Con
 	Archiving project Run-C with scheme Run-C
 (3 failures)
