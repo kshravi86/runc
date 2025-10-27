@@ -112,9 +112,19 @@ jobs:
         security cms -D -i $PP_PATH > $RUNNER_TEMP/profile.plist
         PP_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' $RUNNER_TEMP/profile.plist)
         PP_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' $RUNNER_TEMP/profile.plist)
+        PROFILE_APP_ID=$(/usr/libexec/PlistBuddy -c 'Print :Entitlements:application-identifier' $RUNNER_TEMP/profile.plist)
+        PROFILE_TEAM_ID=${PROFILE_APP_ID%%.*}
+        PROFILE_BUNDLE_ID=${PROFILE_APP_ID#*.}
         echo "Using Provisioning Profile: $PP_NAME ($PP_UUID)"
+        echo "Profile TeamID: $PROFILE_TEAM_ID"
+        echo "Profile BundleID: $PROFILE_BUNDLE_ID"
         echo "PP_UUID=$PP_UUID" >> $GITHUB_ENV
         echo "PP_NAME=$PP_NAME" >> $GITHUB_ENV
+        echo "BUNDLE_ID=$PROFILE_BUNDLE_ID" >> $GITHUB_ENV
+        if [ -z "${IOS_TEAM_ID:-}" ]; then
+          echo "::notice title=Team ID::IOS_TEAM_ID not set; using $PROFILE_TEAM_ID from profile"
+          echo "IOS_TEAM_ID=$PROFILE_TEAM_ID" >> $GITHUB_ENV
+        fi
 
     - name: Detect signing certificate type
       run: |
@@ -138,6 +148,11 @@ jobs:
         set -euo pipefail
         ARCHIVE_PATH="${ARCHIVE_PATH:-$RUNNER_TEMP/Run-C-Release.xcarchive}"
         PROFILE_SPECIFIER="${PP_NAME:-$PP_UUID}"
+        echo "Project: $PROJECT_PATH"
+        echo "Scheme:  $SCHEME_NAME"
+        echo "TeamID:  ${IOS_TEAM_ID}"
+        echo "Bundle:  ${BUNDLE_ID}"
+        echo "Profile: ${PROFILE_SPECIFIER}"
         xcodebuild archive \
           -project "$PROJECT_PATH" \
           -scheme "$SCHEME_NAME" \
@@ -148,6 +163,7 @@ jobs:
           CODE_SIGN_IDENTITY="Apple Distribution" \
           PROVISIONING_PROFILE_SPECIFIER="$PROFILE_SPECIFIER" \
           DEVELOPMENT_TEAM="${IOS_TEAM_ID}" \
+          PRODUCT_BUNDLE_IDENTIFIER="${BUNDLE_ID}" \
           CURRENT_PROJECT_VERSION=$NEW_BUILD
         echo "ARCHIVE_PATH=$ARCHIVE_PATH" >> $GITHUB_ENV
 
