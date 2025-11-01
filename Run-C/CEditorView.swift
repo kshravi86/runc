@@ -482,6 +482,7 @@ struct CEditorView: View {
     @State private var selectedConsoleTab: ConsoleTab = .output
     @State private var didAutoRun = false
     @State private var selectedSample: SampleProgram?
+    @State private var isSidebarVisible: Bool = false
 
     struct SampleProgram: Identifiable, Hashable {
         let id = UUID()
@@ -828,7 +829,10 @@ struct CEditorView: View {
                 .ignoresSafeArea()
 
             HStack(alignment: .top, spacing: isWideLayout ? 20 : 12) {
-                sidebar
+                if isSidebarVisible {
+                    sidebar
+                        .transition(.move(edge: .leading).combined(with: .opacity))
+                }
 
                 VStack(spacing: isWideLayout ? 20 : 16) {
                     header
@@ -851,6 +855,14 @@ struct CEditorView: View {
         // Navigation title is provided by parent (ContentView),
         // avoid duplicate/overlapping titles.
         .toolbar {
+            ToolbarItemGroup(placement: .navigationBarLeading) {
+                Button {
+                    withAnimation { isSidebarVisible.toggle() }
+                } label: {
+                    Label(isSidebarVisible ? "Hide Programs" : "Show Programs", systemImage: "sidebar.left")
+                }
+                .accessibilityLabel(isSidebarVisible ? "Hide programs sidebar" : "Show programs sidebar")
+            }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button("Reset") {
                     code = CEditorView.template
@@ -878,6 +890,7 @@ struct CEditorView: View {
         .background(Color(.systemGroupedBackground)) // Use system-adaptive background for a sleek look
         .animation(.default, value: warnings)
         .animation(.default, value: errorMessage)
+        .animation(.default, value: isSidebarVisible)
         .onAppear {
             let args = ProcessInfo.processInfo.arguments
             if !didAutoRun && args.contains("--auto-run") {
