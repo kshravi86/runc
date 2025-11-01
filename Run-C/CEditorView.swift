@@ -609,10 +609,12 @@ struct CEditorView: View {
                     consoleSection
                 }
             }
+            .padding(.top, isWideLayout ? 24 : 12)
             .padding(.horizontal, isWideLayout ? 24 : 16)
             .padding(.bottom, 16)
         }
-        .navigationTitle("C Sandbox")
+        // Navigation title is provided by parent (ContentView),
+        // avoid duplicate/overlapping titles.
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Menu {
