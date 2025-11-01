@@ -11,6 +11,58 @@ struct CSyntaxHighlighter {
         "union", "unsigned", "void", "volatile", "while", "printf"
     ]
 
+    private var beginnerSamples: [SampleProgram] {
+        samples.filter { beginnerOrder($0) != nil }
+            .sorted { (beginnerOrder($0) ?? Int.max) < (beginnerOrder($1) ?? Int.max) }
+    }
+
+    private var otherSamples: [SampleProgram] {
+        let beginnerSet = Set(beginnerSamples.map { $0.id })
+        return samples.filter { !beginnerSet.contains($0.id) }
+    }
+
+    private func sampleDescription(_ sample: SampleProgram) -> String {
+        switch sample.title {
+        case "Hello World": return "Your first program and printf"
+        case "For Loop Sum": return "Use a for loop and integer math"
+        case "If/Else": return "Branch using conditions"
+        case "Countdown (while)": return "Use a while loop and decrement"
+        case "Multiplication Table (7)": return "Nested printf inside a for loop"
+        case "Average 1..5": return "Compute an average with a loop"
+        case "FizzBuzz 1..20": return "Practice modulo and branching"
+        case "Max of Three": return "Track a running maximum"
+        case "Factorial (iterative)": return "Multiply in a loop"
+        case "Power (loop)": return "Repeated multiplication builds powers"
+        case "Prime Check": return "Detect primes efficiently (i*i <= n)"
+        case "GCD (Euclid)": return "Greatest common divisor via modulo"
+        case "Fibonacci": return "Sequence with temporary variables"
+        case "Hex and Char": return "Format integers as hex and chars"
+        case "Collatz Steps": return "While loop practice with odd/even"
+        default: return ""
+        }
+    }
+
+    private func beginnerOrder(_ sample: SampleProgram) -> Int? {
+        switch sample.title {
+        case "Hello World": return 1
+        case "For Loop Sum": return 2
+        case "If/Else": return 3
+        case "Countdown (while)": return 4
+        case "Multiplication Table (7)": return 5
+        case "Average 1..5": return 6
+        case "FizzBuzz 1..20": return 7
+        case "Max of Three": return 8
+        case "Factorial (iterative)": return 9
+        case "Power (loop)": return 10
+        case "Prime Check": return 11
+        case "GCD (Euclid)": return 12
+        case "Fibonacci": return 13
+        case "Hex and Char": return 14
+        case "Collatz Steps": return 15
+        default: return nil
+        }
+    }
+
     private static let keywordPattern = "\\b(" + keywords.joined(separator: "|") + ")\\b"
     private static let commentPattern = "//.*|/\\*.*?\\*/"
     private static let stringPattern = "\"(\\\\.|[^\"])*\""
@@ -485,6 +537,8 @@ struct CEditorView: View {
         let id = UUID()
         let title: String
         let code: String
+        let description: String = ""
+        let order: Int? = nil
     }
 
     private let samples: [SampleProgram] = [
@@ -551,17 +605,16 @@ struct CEditorView: View {
             """
         ),
         SampleProgram(
-            title: "Array Average",
+            title: "Average 1..5",
             code: """
             #include <stdio.h>
 
             int main(void) {
-                int values[5] = {1, 3, 5, 7, 9};
                 int sum = 0;
-                for (int i = 0; i < 5; i += 1) {
-                    sum += values[i];
+                for (int i = 1; i <= 5; i += 1) {
+                    sum += i;
                 }
-                int avg = sum / 5;
+                int avg = sum / 5; // integer division
                 printf("Average = %d\\n", avg);
                 return 0;
             }
@@ -846,7 +899,13 @@ struct CEditorView: View {
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 8) {
-                    ForEach(samples) { sample in
+                    Text("Beginner Path")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 10)
+                        .padding(.top, 4)
+
+                    ForEach(beginnerSamples) { sample in
                         let isSelected = selectedSample?.id == sample.id
                         Button {
                             selectedSample = sample
@@ -855,10 +914,57 @@ struct CEditorView: View {
                             HStack {
                                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                                     .foregroundColor(isSelected ? .accentColor : .secondary)
-                                Text(sample.title)
-                                    .font(.subheadline.weight(.semibold))
-                                    .foregroundColor(.primary)
-                                    .lineLimit(1)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(sample.title)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundColor(.primary)
+                                        .lineLimit(1)
+                                    if !sampleDescription(sample).isEmpty {
+                                        Text(sampleDescription(sample))
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                }
+                                Spacer(minLength: 0)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+
+                    Divider().padding(.vertical, 6)
+                    Text("More Programs")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundColor(.secondary)
+                        .padding(.horizontal, 10)
+
+                    ForEach(otherSamples) { sample in
+                        let isSelected = selectedSample?.id == sample.id
+                        Button {
+                            selectedSample = sample
+                            select(sample)
+                        } label: {
+                            HStack {
+                                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(isSelected ? .accentColor : .secondary)
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(sample.title)
+                                        .font(.subheadline.weight(.semibold))
+                                        .foregroundColor(.primary)
+                                        .lineLimit(1)
+                                    if !sampleDescription(sample).isEmpty {
+                                        Text(sampleDescription(sample))
+                                            .font(.caption)
+                                            .foregroundColor(.secondary)
+                                            .lineLimit(1)
+                                    }
+                                }
                                 Spacer(minLength: 0)
                             }
                             .padding(.horizontal, 10)
