@@ -1,6 +1,11 @@
 name: C Code Tests
 
 on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Branch or SHA to test (optional)"
+        required: false
   push:
     branches: [ main, master, develop, '*' ]
   pull_request:
@@ -34,4 +39,3 @@ jobs:
           name: c-test-outputs
           path: scripts/c-tests/build
           if-no-files-found: warn
-
