@@ -567,6 +567,179 @@ struct CEditorView: View {
             }
             """
         )
+        ,
+        SampleProgram(
+            title: "FizzBuzz 1..20",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                for (int i = 1; i <= 20; i += 1) {
+                    if (i % 15 == 0) {
+                        printf("FizzBuzz\\n");
+                    } else if (i % 3 == 0) {
+                        printf("Fizz\\n");
+                    } else if (i % 5 == 0) {
+                        printf("Buzz\\n");
+                    } else {
+                        printf("%d\\n", i);
+                    }
+                }
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Factorial (iterative)",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int n = 6;
+                int fact = 1;
+                for (int i = 2; i <= n; i += 1) {
+                    fact = fact * i;
+                }
+                printf("%d! = %d\\n", n, fact);
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "GCD (Euclid)",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int a = 84;
+                int b = 60;
+                while (b != 0) {
+                    int t = a % b;
+                    a = b;
+                    b = t;
+                }
+                printf("GCD = %d\\n", a);
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Prime Check",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int n = 29;
+                int isPrime = 1;
+                if (n < 2) { isPrime = 0; }
+                for (int i = 2; i * i <= n; i += 1) {
+                    if (n % i == 0) { isPrime = 0; }
+                }
+                if (isPrime) {
+                    printf("%d is prime\\n", n);
+                } else {
+                    printf("%d is not prime\\n", n);
+                }
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Multiplication Table (7)",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int n = 7;
+                for (int i = 1; i <= 10; i += 1) {
+                    int p = n * i;
+                    printf("%d x %d = %d\\n", n, i, p);
+                }
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Countdown (while)",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int i = 5;
+                while (i >= 0) {
+                    printf("%d\\n", i);
+                    i = i - 1;
+                }
+                printf("Blast off!\\n");
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Power (loop)",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int base = 3;
+                int exp = 5;
+                int result = 1;
+                for (int i = 0; i < exp; i += 1) {
+                    result = result * base;
+                }
+                printf("%d^%d = %d\\n", base, exp, result);
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Max of Three",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int a = 10, b = 25, c = 17;
+                int max = a;
+                if (b > max) { max = b; }
+                if (c > max) { max = c; }
+                printf("max = %d\\n", max);
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Hex and Char",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int x = 255;
+                printf("dec=%d hex=%X char=%c\\n", x, x, 65);
+                return 0;
+            }
+            """
+        ),
+        SampleProgram(
+            title: "Collatz Steps",
+            code: """
+            #include <stdio.h>
+
+            int main(void) {
+                int n = 27;
+                int steps = 0;
+                while (n != 1) {
+                    if (n % 2 == 0) {
+                        n = n / 2;
+                    } else {
+                        n = 3 * n + 1;
+                    }
+                    steps = steps + 1;
+                }
+                printf("steps = %d\\n", steps);
+                return 0;
+            }
+            """
+        )
     ]
 
     private enum ConsoleTab: String, Identifiable {
