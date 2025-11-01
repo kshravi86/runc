@@ -478,6 +478,7 @@ struct CEditorView: View {
     @State private var pendingSample: SampleProgram?
     @State private var showReplaceConfirm = false
     @State private var selectedConsoleTab: ConsoleTab = .output
+    @State private var didAutoRun = false
 
     struct SampleProgram: Identifiable, Hashable {
         let id = UUID()
@@ -650,6 +651,18 @@ struct CEditorView: View {
         .background(Color(.systemGroupedBackground)) // Use system-adaptive background for a sleek look
         .animation(.default, value: warnings)
         .animation(.default, value: errorMessage)
+        .onAppear {
+            let args = ProcessInfo.processInfo.arguments
+            if !didAutoRun && args.contains("--auto-run") {
+                if let first = samples.first {
+                    apply(first)
+                }
+                didAutoRun = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    runCode()
+                }
+            }
+        }
     }
 
     private var header: some View {

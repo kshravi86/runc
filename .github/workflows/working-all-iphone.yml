@@ -51,15 +51,15 @@ jobs:
           BUNDLE_ID="com.murugan.guha"
           # 1) Launch default editor screen
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
-          xcrun simctl launch "$UDID" "$BUNDLE_ID" --disable-animations || true
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" --disable-animations --auto-run || true
           sleep 3
           xcrun simctl io "$UDID" screenshot "sim_screenshots/01_editor.png"
 
           # 2) Optionally re-launch to ensure clean state, then capture "after run" output
           xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
-          xcrun simctl launch "$UDID" "$BUNDLE_ID" --disable-animations || true
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" --disable-animations --auto-run || true
           sleep 3
-          xcrun simctl io "$UDID" screenshot "sim_screenshots/02_editor_alt.png"
+          xcrun simctl io "$UDID" screenshot "sim_screenshots/02_after_run.png"
 
       - name: Normalize to 1284x2778 (Apple-accepted)
         run: |
