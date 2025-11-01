@@ -902,7 +902,7 @@ struct CEditorView: View {
                 lastRunDate = Date()
                 switch result {
                 case .success(let execution):
-                    Log.info("Execution success: duration=\(String(format: \"%.3f\", execution.duration))s, warnings=\(execution.warnings.count), outputLen=\(execution.output.count)", category: .ui)
+                    Log.info("Execution success: duration=\(String(format: "%.3f", execution.duration))s, warnings=\(execution.warnings.count), outputLen=\(execution.output.count)", category: .ui)
                     consoleOutput = execution.output
                     warnings = execution.warnings
                     duration = execution.duration
