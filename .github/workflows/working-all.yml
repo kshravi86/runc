@@ -1,4 +1,4 @@
-name: working (All 5 Pages)
+name: Run-C iPad Screenshot
 
 on:
   workflow_dispatch:
@@ -20,55 +20,24 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Build Swiss Ephemeris static library (simulator)
-        run: |
-          set -euo pipefail
-          SRC_DIR="ThirdParty/SwissEph/src"
-          mkdir -p ThirdParty/SwissEph/lib
-          pushd "$SRC_DIR" >/dev/null
-          SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
-          CC=$(xcrun --sdk iphonesimulator -f clang)
-          CFLAGS="-arch arm64 -mios-simulator-version-min=17.0 -isysroot $SDK -O2 -I."
-          OBJS=()
-          for c in swe*.c swem*.c sweh*.c; do
-            [ "$c" = "swetest.c" ] && continue
-            "$CC" $CFLAGS -c "$c" -o "${c%.c}.o"
-            OBJS+=("${c%.c}.o")
-          done
-          libtool -static -o libswe.a "${OBJS[@]}"
-          mv -f libswe.a ../lib/
-          popd >/dev/null
-
       - name: Build app for Simulator (Debug)
         run: |
           set -euo pipefail
           DEVICE_NAME='${{ inputs.device }}'
-          xcodebuild -resolvePackageDependencies -project NotesApp.xcodeproj -scheme NotesApp -clonedSourcePackagesDirPath "$RUNNER_TEMP/SPM"
-          xcodebuild -project NotesApp.xcodeproj \
-            -scheme NotesApp \
+          xcodebuild -resolvePackageDependencies -project Run-C.xcodeproj -scheme 'Run-C' -clonedSourcePackagesDirPath "$RUNNER_TEMP/SPM"
+          xcodebuild -project Run-C.xcodeproj \
+            -scheme 'Run-C' \
             -configuration Debug \
             -destination "platform=iOS Simulator,name=${DEVICE_NAME},OS=latest" \
             -derivedDataPath "$RUNNER_TEMP/DerivedData" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=YES ARCHS=arm64 EXCLUDED_ARCHS=arm64e \
-            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
-            LIBRARY_SEARCH_PATHS=$(pwd)/ThirdParty/SwissEph/lib \
-            OTHER_LDFLAGS=$(pwd)/ThirdParty/SwissEph/lib/libswe.a \
             build | xcpretty
           APP_DIR=$(find "$RUNNER_TEMP/DerivedData/Build/Products/Debug-iphonesimulator" -type d -name "*.app" -maxdepth 1 | head -n1 || true)
           if [ -z "$APP_DIR" ]; then echo "::error::No simulator .app found"; exit 1; fi
           echo "APP_DIR=$APP_DIR" >> $GITHUB_ENV
 
-      - name: Ensure SwissEph data bundled (sim)
-        run: |
-          set -euo pipefail
-          DATA_DIR="$APP_DIR/SwissEph"
-          mkdir -p "$DATA_DIR"
-          rsync -a --exclude '*.md' --exclude '*.txt' NotesApp/SwissEph/ "$DATA_DIR"/
-          COUNT=$(find "$DATA_DIR" -type f -name '*.se1' | wc -l | tr -d ' ')
-          if [ "$COUNT" -eq 0 ]; then echo "::error::No SwissEph .se1 files copied"; exit 1; fi
-
-      - name: Take simulator screenshots for 5 pages
+      - name: Take simulator screenshot (single)
         run: |
           set -euo pipefail
           mkdir -p sim_screenshots
@@ -78,25 +47,20 @@ jobs:
           xcrun simctl boot "$UDID" || true
           xcrun simctl bootstatus "$UDID" -b
           xcrun simctl install "$UDID" "$APP_DIR"
+          # Launch Run-C and prepare the main screen for a clean screenshot.
+          BUNDLE_ID="com.murugan.guha"
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+          # Pass an optional flag we support to auto-run a sample for a lively screenshot.
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" -- --auto-run || true
+          # Give the app a moment to settle before capturing.
+          sleep 5
+          OUT="sim_screenshots/RunC_iPadSim.png"
+          xcrun simctl io "$UDID" screenshot "$OUT"
+          if [ ! -f "$OUT" ]; then echo "::error::Failed to create $OUT"; exit 1; fi
+          echo "Created: $OUT"
 
-          # pages: birth(home), dasha, ishtadevta, yogi, panchanga
-          declare -a PAGES=("birth" "dasha" "ishtadevta" "yogi" "panchanga")
-          i=1
-          for page in "${PAGES[@]}"; do
-            echo "Capturing page: $page"
-            xcrun simctl terminate "$UDID" com.vedic.light || true
-            xcrun simctl launch "$UDID" com.vedic.light --seed-screenshots --disable-animations --tab "$page" || true
-            sleep 5
-            PAD=$(printf "%02d" "$i")
-            OUT="sim_screenshots/iPadSim_${PAD}_${page}.png"
-            xcrun simctl io "$UDID" screenshot "$OUT"
-            if [ ! -f "$OUT" ]; then echo "::error::Failed to create $OUT"; exit 1; fi
-            echo "Created: $OUT"
-            i=$((i+1))
-          done
-
-      - name: Upload Screenshot Artifact (All 5)
+      - name: Upload Screenshot Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: iPad-Sim-Screenshots-5
+          name: RunC-iPadSim-Screenshot
           path: sim_screenshots
