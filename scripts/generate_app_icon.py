@@ -46,45 +46,31 @@ def gradient_bg(size: int,
 
 
 def draw_c_glyph_layer(size: int, base_bg: Image.Image, fg=(255, 255, 255)) -> Image.Image:
-    """Draw a refined "C" glyph with a tiny play-cutout and soft shadow.
+    """Draw a refined C glyph as an alpha mask, then color it.
 
     Returns an RGBA image containing only the glyph (with transparency).
     """
-    glyph = Image.new('RGBA', (size, size), (0, 0, 0, 0))
-    draw = ImageDraw.Draw(glyph)
     W = H = size
     pad = int(0.2 * W)
     bbox = [pad, pad, W - pad, H - pad]
     thickness = int(0.13 * W)
 
-    # Main ring
-    draw.ellipse(bbox, outline=fg, width=thickness)
+    # Build an alpha mask for the glyph as a thick arc (ring segment)
+    mask = Image.new('L', (W, H), 0)
+    mdraw = ImageDraw.Draw(mask)
+    inner = [bbox[0] + thickness, bbox[1] + thickness, bbox[2] - thickness, bbox[3] - thickness]
 
-    # Carve opening on right to form a "C" (simulate cutout using background sample)
-    bg_sample = base_bg.getpixel((W // 2, H - 1))
-    open_w = int(0.34 * W)
-    open_h = int(0.56 * H)
-    rect = [W - pad - open_w, (H - open_h) // 2, W - pad + open_w, (H + open_h) // 2]
-    draw.rectangle(rect, fill=bg_sample)
+    gap_angle = 70  # degrees (symmetric gap on right)
+    start = gap_angle // 2
+    end = 360 - gap_angle // 2
+    mdraw.pieslice(bbox, start=start, end=end, fill=255)
+    mdraw.pieslice(inner, start=start, end=end, fill=0)
 
-    # Round ends a bit to avoid harsh edges
-    end_r = int(thickness * 0.6)
-    cx = W - pad - open_w
-    cy1 = (H - open_h) // 2
-    cy2 = (H + open_h) // 2
-    draw.ellipse([cx - end_r, cy1 - end_r, cx + end_r, cy1 + end_r], fill=bg_sample)
-    draw.ellipse([cx - end_r, cy2 - end_r, cx + end_r, cy2 + end_r], fill=bg_sample)
+    # (Removed triangle cutout for a cleaner, more legible glyph)
 
-    # Subtle "Run" cue: a small play triangle cutout inside
-    tri_w = int(0.18 * W)
-    tri_h = int(0.18 * H)
-    tri_cx = int(W * 0.52)
-    tri_cy = H // 2
-    p1 = (tri_cx - tri_w // 2, tri_cy - tri_h // 2)
-    p2 = (tri_cx - tri_w // 2, tri_cy + tri_h // 2)
-    p3 = (tri_cx + tri_w // 2, tri_cy)
-    draw.polygon([p1, p2, p3], fill=bg_sample)
-
+    # Colorize mask
+    glyph = Image.new('RGBA', (W, H), (*fg, 255))
+    glyph.putalpha(mask)
     return glyph
 
 
