@@ -1,4 +1,170 @@
 import Foundation
+import os
+
+// MARK: - Unified Logging
+
+enum LogCategory: String {
+    case general = "general"
+    case compiler = "compiler"
+    case ui = "ui"
+    case editor = "editor"
+}
+
+enum LogLevel: String { case debug = "DEBUG", info = "INFO", warn = "WARN", error = "ERROR" }
+
+final class Log {
+    static let shared = Log()
+
+    private let subsystem: String
+    private let fileQueue = DispatchQueue(label: "run-c.logger.file", qos: .utility)
+    private var fileHandle: FileHandle?
+    private var currentLogURL: URL?
+    private let maxFileBytes: Int = 512 * 1024 // 512 KB per file
+    private let maxFiles = 5
+
+    private init() {
+        self.subsystem = Bundle.main.bundleIdentifier ?? "Run-C"
+        prepareFileLogging()
+    }
+
+    // Public API
+    static func debug(_ message: @autoclosure () -> String,
+                      category: LogCategory = .general,
+                      file: StaticString = #fileID,
+                      function: StaticString = #function,
+                      line: UInt = #line) {
+        shared.write(level: .debug, category: category, message: message(), file: String(describing: file), function: String(describing: function), line: line)
+    }
+
+    static func info(_ message: @autoclosure () -> String,
+                     category: LogCategory = .general,
+                     file: StaticString = #fileID,
+                     function: StaticString = #function,
+                     line: UInt = #line) {
+        shared.write(level: .info, category: category, message: message(), file: String(describing: file), function: String(describing: function), line: line)
+    }
+
+    static func warn(_ message: @autoclosure () -> String,
+                     category: LogCategory = .general,
+                     file: StaticString = #fileID,
+                     function: StaticString = #function,
+                     line: UInt = #line) {
+        shared.write(level: .warn, category: category, message: message(), file: String(describing: file), function: String(describing: function), line: line)
+    }
+
+    static func error(_ message: @autoclosure () -> String,
+                      category: LogCategory = .general,
+                      file: StaticString = #fileID,
+                      function: StaticString = #function,
+                      line: UInt = #line) {
+        shared.write(level: .error, category: category, message: message(), file: String(describing: file), function: String(describing: function), line: line)
+    }
+
+    static func logFileURLs() -> [URL] {
+        shared.listLogFiles()
+    }
+
+    // Internal
+    private func write(level: LogLevel, category: LogCategory, message: String, file: String, function: String, line: UInt) {
+        let logger = os.Logger(subsystem: subsystem, category: category.rawValue)
+        switch level {
+        case .debug: logger.debug("\(message, privacy: .public)")
+        case .info: logger.info("\(message, privacy: .public)")
+        case .warn: logger.warning("\(message, privacy: .public)")
+        case .error: logger.error("\(message, privacy: .public)")
+        }
+
+        // File
+        fileQueue.async { [weak self] in
+            guard let self = self else { return }
+            let ts = ISO8601DateFormatter().string(from: Date())
+            let lineText = "[\(level.rawValue)] [\(category.rawValue)] [\(ts)] \(message) (\(file):\(line) \(function))\n"
+            self.appendToFile(lineText)
+        }
+    }
+
+    private func logsDirectory() -> URL? {
+        do {
+            let dir = try FileManager.default.url(for: .cachesDirectory, in: .userDomainMask, appropriateFor: nil, create: true)
+                .appendingPathComponent("Logs", isDirectory: true)
+            if !FileManager.default.fileExists(atPath: dir.path) {
+                try FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+            }
+            return dir
+        } catch {
+            return nil
+        }
+    }
+
+    private func prepareFileLogging() {
+        fileQueue.sync {
+            guard let dir = logsDirectory() else { return }
+            let date = Date()
+            let df = DateFormatter()
+            df.dateFormat = "yyyyMMdd"
+            let filename = "run-c-\(df.string(from: date)).log"
+            let url = dir.appendingPathComponent(filename)
+            if !FileManager.default.fileExists(atPath: url.path) {
+                FileManager.default.createFile(atPath: url.path, contents: nil)
+            }
+            currentLogURL = url
+            fileHandle = try? FileHandle(forWritingTo: url)
+            try? fileHandle?.seekToEnd()
+            rotateIfNeeded()
+        }
+    }
+
+    private func appendToFile(_ text: String) {
+        guard let handle = fileHandle, let data = text.data(using: .utf8) else { return }
+        do {
+            try handle.seekToEnd()
+            try handle.write(contentsOf: data)
+            rotateIfNeeded()
+        } catch {
+            // If writing fails, try to reopen once
+            prepareFileLogging()
+        }
+    }
+
+    private func rotateIfNeeded() {
+        guard let url = currentLogURL else { return }
+        guard let attrs = try? FileManager.default.attributesOfItem(atPath: url.path), let size = attrs[.size] as? NSNumber else { return }
+        if size.intValue < maxFileBytes { return }
+
+        // Close current
+        try? fileHandle?.close()
+        fileHandle = nil
+
+        // Rename with timestamp
+        let ts = Int(Date().timeIntervalSince1970)
+        let rotated = url.deletingPathExtension().appendingPathExtension("\(ts).log")
+        try? FileManager.default.moveItem(at: url, to: rotated)
+
+        // Cleanup old
+        cleanupOldLogs()
+
+        // Start a new
+        prepareFileLogging()
+    }
+
+    private func listLogFiles() -> [URL] {
+        guard let dir = logsDirectory() else { return [] }
+        let urls = (try? FileManager.default.contentsOfDirectory(at: dir, includingPropertiesForKeys: [.contentModificationDateKey], options: [.skipsHiddenFiles])) ?? []
+        return urls.sorted { (a, b) -> Bool in
+            let da = (try? a.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast
+            let db = (try? b.resourceValues(forKeys: [.contentModificationDateKey]).contentModificationDate) ?? .distantPast
+            return da ?? .distantPast > db ?? .distantPast
+        }
+    }
+
+    private func cleanupOldLogs() {
+        let urls = listLogFiles()
+        if urls.count <= maxFiles { return }
+        for url in urls.suffix(from: maxFiles) {
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
+}
 
 /// Result returned by the offline runner.
 struct CExecutionResult {
@@ -34,20 +200,28 @@ enum CCompilerError: LocalizedError {
 final class OfflineCCompiler {
     func run(source: String) -> Result<CExecutionResult, CCompilerError> {
         let startedAt = Date()
+        Log.info("Run started (chars=\(source.count))", category: .compiler)
         do {
             let sanitized = preprocess(source: source)
+            Log.debug("Preprocessed source length=\(sanitized.count)", category: .compiler)
             var lexer = CLexer(source: sanitized)
             let tokens = try lexer.tokenize()
+            Log.debug("Tokenized count=\(tokens.count) line=\(lexer.lineNumber)", category: .compiler)
             var parser = CParser(tokens: tokens)
             let statements = try parser.parseProgram()
+            Log.debug("Parsed statements=\(statements.count) warnings=\(parser.warnings.count)", category: .compiler)
             var interpreter = CInterpreter()
             let stdout = try interpreter.execute(statements: statements)
+            Log.debug("Interpreter warnings=\(interpreter.warnings.count) outputLength=\(stdout.count)", category: .compiler)
             let warnings = parser.warnings + interpreter.warnings
             let duration = Date().timeIntervalSince(startedAt)
+            Log.info("Run finished success in \(String(format: "%.3f", duration))s (warnings=\(warnings.count))", category: .compiler)
             return .success(CExecutionResult(output: stdout, warnings: warnings, duration: duration))
         } catch let error as CCompilerError {
+            Log.error("Run failed: \(error.localizedDescription)", category: .compiler)
             return .failure(error)
         } catch {
+            Log.error("Run failed (internal): \(error.localizedDescription)", category: .compiler)
             return .failure(.internalError(message: error.localizedDescription))
         }
     }

@@ -892,6 +892,7 @@ struct CEditorView: View {
         duration = nil
         selectedConsoleTab = .output
         consoleOutput = ""
+        Log.info("Run button tapped (lines=\(codeLineCount), chars=\(codeCharacterCount))", category: .ui)
 
         Task.detached(priority: .userInitiated) {
             let runner = OfflineCCompiler()
@@ -901,6 +902,7 @@ struct CEditorView: View {
                 lastRunDate = Date()
                 switch result {
                 case .success(let execution):
+                    Log.info("Execution success: duration=\(String(format: \"%.3f\", execution.duration))s, warnings=\(execution.warnings.count), outputLen=\(execution.output.count)", category: .ui)
                     consoleOutput = execution.output
                     warnings = execution.warnings
                     duration = execution.duration
@@ -909,6 +911,7 @@ struct CEditorView: View {
                         selectedConsoleTab = .output
                     }
                 case .failure(let error):
+                    Log.warn("Execution failure shown to user: \(error.localizedDescription)", category: .ui)
                     errorMessage = error.localizedDescription
                     // Extract line number when available
                     switch error {
@@ -934,6 +937,7 @@ struct CEditorView: View {
     }
 
     private func apply(_ sample: SampleProgram) {
+        Log.info("Applying sample: \(sample.title) (chars=\(sample.code.count))", category: .editor)
         code = sample.code
         lastLoadedCode = sample.code
         errorMessage = nil
