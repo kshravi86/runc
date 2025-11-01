@@ -1,0 +1,86 @@
+name: Run-C Screenshots (iPhone)
+
+on:
+  workflow_dispatch:
+    inputs:
+      device:
+        description: "Simulator device name (iPhone)"
+        required: false
+        default: "iPhone 16 Pro"
+
+jobs:
+  simshot:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Build app for Simulator (Debug)
+        run: |
+          set -euo pipefail
+          DEVICE_NAME='${{ inputs.device }}'
+          xcodebuild -resolvePackageDependencies -project Run-C.xcodeproj -scheme "Run-C" -clonedSourcePackagesDirPath "$RUNNER_TEMP/SPM"
+          xcodebuild -project Run-C.xcodeproj \
+            -scheme "Run-C" \
+            -configuration Debug \
+            -destination "platform=iOS Simulator,name=${DEVICE_NAME},OS=latest" \
+            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
+            ONLY_ACTIVE_ARCH=YES ARCHS=arm64 EXCLUDED_ARCHS=arm64e \
+            IPHONEOS_DEPLOYMENT_TARGET=17.0 \
+            build | xcpretty
+          APP_DIR=$(find "$RUNNER_TEMP/DerivedData/Build/Products/Debug-iphonesimulator" -type d -name "*.app" -maxdepth 1 | head -n1 || true)
+          if [ -z "$APP_DIR" ]; then echo "::error::No simulator .app found"; exit 1; fi
+          echo "APP_DIR=$APP_DIR" >> $GITHUB_ENV
+
+      - name: Take simulator screenshots (Run-C)
+        run: |
+          set -euo pipefail
+          mkdir -p sim_screenshots
+          DEVICE_NAME='${{ inputs.device }}'
+          UDID=$(xcrun simctl list devices | grep -F "${DEVICE_NAME}" | head -n1 | sed -E 's/.*\(([A-F0-9-]+)\).*/\1/' || true)
+          if [ -z "$UDID" ]; then echo "::error::Device not found: $DEVICE_NAME"; xcrun simctl list devices; exit 1; fi
+          xcrun simctl boot "$UDID" || true
+          xcrun simctl bootstatus "$UDID" -b
+          xcrun simctl install "$UDID" "$APP_DIR"
+          BUNDLE_ID="com.murugan.guha"
+          # 1) Launch default editor screen
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" --disable-animations || true
+          sleep 3
+          xcrun simctl io "$UDID" screenshot "sim_screenshots/01_editor.png"
+
+          # 2) Optionally re-launch to ensure clean state, then capture "after run" output
+          xcrun simctl terminate "$UDID" "$BUNDLE_ID" || true
+          xcrun simctl launch "$UDID" "$BUNDLE_ID" --disable-animations || true
+          sleep 3
+          xcrun simctl io "$UDID" screenshot "sim_screenshots/02_editor_alt.png"
+
+      - name: Normalize to 1284x2778 (Apple-accepted)
+        run: |
+          set -euo pipefail
+          mkdir -p sim_screenshots/final
+          if command -v magick >/dev/null 2>&1; then
+            shopt -s nullglob
+            for f in sim_screenshots/*.png; do
+              base=$(basename "${f%.*}")
+              out="sim_screenshots/final/${base}_1284x2778.png"
+              magick "$f" -resize "1284x2778^" -gravity center -crop 1284x2778+0+0 +repage "$out"
+              echo "Wrote $out"
+            done
+          else
+            echo "::warning ::ImageMagick not found; skipping normalization to 1284x2778"
+          fi
+
+      - name: Upload Screenshot Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Run-C-iPhone-Screenshots
+          path: |
+            sim_screenshots/final/*.png
+            sim_screenshots/*.png
