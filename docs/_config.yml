@@ -1,0 +1,8 @@
+title: Run-C Support
+description: Support, FAQs, and contact for the Run-C iOS app.
+theme: minima
+markdown: kramdown
+minima:
+  social_links:
+    - { platform: email, user_url: "mailto:kshravi86@gmail.com" }
+
