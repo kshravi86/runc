@@ -479,6 +479,7 @@ struct CEditorView: View {
     @State private var showReplaceConfirm = false
     @State private var selectedConsoleTab: ConsoleTab = .output
     @State private var didAutoRun = false
+    @State private var selectedSample: SampleProgram?
 
     struct SampleProgram: Identifiable, Hashable {
         let id = UUID()
@@ -597,36 +598,31 @@ struct CEditorView: View {
             Color(.systemGroupedBackground)
                 .ignoresSafeArea()
 
-            VStack(spacing: isWideLayout ? 20 : 16) {
-                header
-                if isWideLayout {
-                    HStack(alignment: .top, spacing: 20) {
+            HStack(alignment: .top, spacing: isWideLayout ? 20 : 12) {
+                sidebar
+
+                VStack(spacing: isWideLayout ? 20 : 16) {
+                    header
+                    if isWideLayout {
+                        HStack(alignment: .top, spacing: 20) {
+                            editorSection
+                            consoleSection
+                        }
+                    } else {
                         editorSection
                         consoleSection
                     }
-                } else {
-                    editorSection
-                    consoleSection
                 }
+                .frame(maxWidth: .infinity, alignment: .top)
             }
             .padding(.top, isWideLayout ? 24 : 12)
-            .padding(.horizontal, isWideLayout ? 24 : 16)
+            .padding(.horizontal, isWideLayout ? 24 : 12)
             .padding(.bottom, 16)
         }
         // Navigation title is provided by parent (ContentView),
         // avoid duplicate/overlapping titles.
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarTrailing) {
-                Menu {
-                    ForEach(samples) { sample in
-                        Button(sample.title) {
-                            select(sample)
-                        }
-                    }
-                } label: {
-                    Label("Samples", systemImage: "book")
-                }
-
                 Button("Reset") {
                     code = CEditorView.template
                     lastLoadedCode = CEditorView.template
@@ -665,6 +661,59 @@ struct CEditorView: View {
                 }
             }
         }
+    }
+
+    private var sidebar: some View {
+        let sideWidth: CGFloat = isWideLayout ? 220 : 160
+        return VStack(alignment: .leading, spacing: 12) {
+            Label("Programs", systemImage: "list.bullet")
+                .font(.headline)
+                .padding(.horizontal, 12)
+                .padding(.top, 12)
+
+            ScrollView {
+                VStack(alignment: .leading, spacing: 8) {
+                    ForEach(samples) { sample in
+                        let isSelected = selectedSample?.id == sample.id
+                        Button {
+                            selectedSample = sample
+                            select(sample)
+                        } label: {
+                            HStack {
+                                Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
+                                    .foregroundColor(isSelected ? .accentColor : .secondary)
+                                Text(sample.title)
+                                    .font(.subheadline.weight(.semibold))
+                                    .foregroundColor(.primary)
+                                    .lineLimit(1)
+                                Spacer(minLength: 0)
+                            }
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 8)
+                            .background(
+                                RoundedRectangle(cornerRadius: 10, style: .continuous)
+                                    .fill(isSelected ? Color.accentColor.opacity(0.12) : Color.clear)
+                            )
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 8)
+                .padding(.bottom, 12)
+            }
+
+            Spacer(minLength: 0)
+        }
+        .frame(width: sideWidth, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.2))
+        )
+        .shadow(color: cardShadow.opacity(0.6), radius: 14, y: 8)
     }
 
     private var header: some View {
