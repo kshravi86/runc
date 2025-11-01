@@ -829,7 +829,7 @@ struct CEditorView: View {
                 .ignoresSafeArea()
 
             HStack(alignment: .top, spacing: isWideLayout ? 20 : 12) {
-                if isSidebarVisible {
+                if isWideLayout && isSidebarVisible {
                     sidebar
                         .transition(.move(edge: .leading).combined(with: .opacity))
                 }
@@ -891,6 +891,21 @@ struct CEditorView: View {
         .animation(.default, value: warnings)
         .animation(.default, value: errorMessage)
         .animation(.default, value: isSidebarVisible)
+        // On compact (iPhone), present the sidebar as a sheet instead of inline panel
+        .sheet(isPresented: Binding(
+            get: { !isWideLayout && isSidebarVisible },
+            set: { show in if !show { isSidebarVisible = false } }
+        )) {
+            NavigationStack {
+                ScrollView { sidebar.padding() }
+                    .navigationTitle("Programs")
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Close") { isSidebarVisible = false }
+                        }
+                    }
+            }
+        }
         .onAppear {
             let args = ProcessInfo.processInfo.arguments
             if !didAutoRun && args.contains("--auto-run") {
