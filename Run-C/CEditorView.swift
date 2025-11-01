@@ -463,6 +463,9 @@ struct CEditorView: View {
     }
     """
 
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+    @Environment(\.colorScheme) private var colorScheme
+
     @State private var code: String = CEditorView.template
     @State private var consoleOutput: String = "Tap Run to execute your program offline."
     @State private var warnings: [String] = []
@@ -474,6 +477,7 @@ struct CEditorView: View {
     @State private var lastLoadedCode: String = CEditorView.template
     @State private var pendingSample: SampleProgram?
     @State private var showReplaceConfirm = false
+    @State private var selectedConsoleTab: ConsoleTab = .output
 
     struct SampleProgram: Identifiable, Hashable {
         let id = UUID()
@@ -563,16 +567,49 @@ struct CEditorView: View {
         )
     ]
 
+    private enum ConsoleTab: String, Identifiable {
+        case output = "Output"
+        case warnings = "Warnings"
+
+        var id: String { rawValue }
+
+        var icon: String {
+            switch self {
+            case .output:
+                return "terminal.fill"
+            case .warnings:
+                return "exclamationmark.triangle.fill"
+            }
+        }
+    }
+
+    private var isWideLayout: Bool {
+        horizontalSizeClass == .regular
+    }
+
+    private var cardShadow: Color {
+        Color.black.opacity(colorScheme == .dark ? 0.35 : 0.08)
+    }
+
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            Divider()
-            CodeEditorView(text: $code, errorLine: errorLine)
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .padding(.horizontal)
-                .padding(.top, 12)
-            Divider()
-            consoleView
+        ZStack(alignment: .top) {
+            Color(.systemGroupedBackground)
+                .ignoresSafeArea()
+
+            VStack(spacing: isWideLayout ? 20 : 16) {
+                header
+                if isWideLayout {
+                    HStack(alignment: .top, spacing: 20) {
+                        editorSection
+                        consoleSection
+                    }
+                } else {
+                    editorSection
+                    consoleSection
+                }
+            }
+            .padding(.horizontal, isWideLayout ? 24 : 16)
+            .padding(.bottom, 16)
         }
         .navigationTitle("C Sandbox")
         .toolbar {
@@ -590,14 +627,19 @@ struct CEditorView: View {
                 Button("Reset") {
                     code = CEditorView.template
                     lastLoadedCode = CEditorView.template
+                    selectedConsoleTab = .output
                 }
                 .disabled(isRunning)
 
                 Button(action: runCode) {
-                    if isRunning {
-                        ProgressView()
-                    } else {
-                        Label("Run", systemImage: "play.fill")
+                    HStack(spacing: 6) {
+                        if isRunning {
+                            ProgressView()
+                        } else {
+                            Image(systemName: "play.fill")
+                        }
+                        Text(isRunning ? "Running" : "Run")
+                            .fontWeight(.semibold)
                     }
                 }
                 .disabled(code.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isRunning)
@@ -611,63 +653,214 @@ struct CEditorView: View {
     }
 
     private var header: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Offline C Compiler")
-                .font(.title2)
-                .fontWeight(.semibold)
-            Text("Code never leaves the device. Supports basic control flow, math and printf.")
-                .font(.footnote)
-                .foregroundColor(.secondary)
-            if let duration, let lastRunDate {
-                Text(String(format: "Last run %@ · %.2f ms",
-                            lastRunDate.formatted(date: .omitted, time: .standard),
-                            duration * 1000))
-                .font(.footnote)
-                .foregroundColor(.secondary)
+        VStack(alignment: .leading, spacing: 14) {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Offline C Compiler")
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                    Text("Code never leaves the device. Supports basic control flow, math and printf.")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                if let lastRunDate {
+                    VStack(alignment: .trailing, spacing: 6) {
+                        Text("Last run")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Text(lastRunDate.formatted(date: .numeric, time: .shortened))
+                            .font(.subheadline.weight(.semibold))
+                        if let duration {
+                            Text(String(format: "%.2f ms", duration * 1000))
+                                .font(.caption)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                }
             }
+
+            statusBadges
         }
-        .padding()
+        .padding(20)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color(.systemBackground)) // System-adaptive background for header
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(.secondarySystemGroupedBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color.white.opacity(colorScheme == .dark ? 0.05 : 0.25))
+        )
+        .shadow(color: cardShadow, radius: 22, y: 12)
     }
 
-    private var consoleView: some View {
-        VStack(alignment: .leading, spacing: 8) {
+    private var editorSection: some View {
+        VStack(alignment: .leading, spacing: 14) {
             HStack {
-                Label("Console", systemImage: "terminal.fill")
+                Label("Source", systemImage: "chevron.left.slash.chevron.right")
                     .font(.headline)
+                Spacer()
+            }
+
+            editorMetrics
+
+            CodeEditorView(text: $code, errorLine: errorLine)
+                .frame(height: isWideLayout ? 420 : 320)
+                .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color(.separator).opacity(0.2))
+                )
+        }
+        .padding(20)
+        .frame(maxWidth: .infinity, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(.systemBackground))
+        )
+        .shadow(color: cardShadow, radius: 24, y: 14)
+    }
+
+    private var consoleSection: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack {
+                Label(selectedConsoleTab.rawValue, systemImage: selectedConsoleTab.icon)
+                    .font(.headline.weight(.semibold))
                 Spacer()
                 if isRunning {
                     Text("Running…")
                         .font(.subheadline)
                         .foregroundColor(.secondary)
+                } else if let errorMessage, !errorMessage.isEmpty {
+                    Text("Build failed")
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundColor(.red)
+                } else {
+                    Text(lastRunDate == nil ? "Idle" : "Ready")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
                 }
             }
 
-            ScrollView {
-                Text(outputText)
-                    .font(.system(.body, design: .monospaced))
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(12)
-                    .background(Color(.secondarySystemBackground)) // Use secondary system background for console output
-                    .cornerRadius(8)
+            if availableConsoleTabs.count > 1 {
+                Picker("Console section", selection: $selectedConsoleTab) {
+                    ForEach(availableConsoleTabs) { tab in
+                        Text(tab.rawValue).tag(tab)
+                    }
+                }
+                .pickerStyle(.segmented)
             }
 
-            if !warnings.isEmpty {
-                VStack(alignment: .leading, spacing: 4) {
-                    Label("Warnings", systemImage: "exclamationmark.triangle.fill")
-                        .font(.subheadline)
-                        .foregroundColor(.orange)
-                    ForEach(warnings, id: \.self) { warning in
-                        Text("• \(warning)")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
+            Group {
+                switch selectedConsoleTab {
+                case .output:
+                    ScrollView {
+                        Text(outputText)
+                            .font(.system(.body, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(16)
+                            .background(Color(.secondarySystemBackground))
+                            .clipShape(RoundedRectangle(cornerRadius: 16, style: .continuous))
+                            .textSelection(.enabled)
+                    }
+                case .warnings:
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 12) {
+                            ForEach(warnings, id: \.self) { warning in
+                                HStack(alignment: .top, spacing: 10) {
+                                    Image(systemName: "exclamationmark.triangle.fill")
+                                        .foregroundColor(.orange)
+                                        .font(.headline)
+                                    Text(warning)
+                                        .font(.footnote.monospaced())
+                                        .foregroundColor(.primary)
+                                        .frame(maxWidth: .infinity, alignment: .leading)
+                                }
+                                .padding(14)
+                                .background(Color.orange.opacity(colorScheme == .dark ? 0.2 : 0.1))
+                                .clipShape(RoundedRectangle(cornerRadius: 14, style: .continuous))
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
         }
-        .padding()
-        .background(Color(.systemBackground)) // System-adaptive background for console view
+        .padding(20)
+        .frame(maxWidth: .infinity, minHeight: isWideLayout ? 280 : 240, alignment: .topLeading)
+        .background(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color(.systemBackground))
+        )
+        .overlay(
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .stroke(Color(.separator).opacity(0.12))
+        )
+        .shadow(color: cardShadow, radius: 24, y: 14)
+        .onChange(of: warnings) { newValue in
+            if newValue.isEmpty {
+                selectedConsoleTab = .output
+            }
+        }
+    }
+
+    private var statusBadges: some View {
+        HStack(spacing: 10) {
+            if isRunning {
+                statusBadge(text: "Running", systemImage: "bolt.fill", foreground: .blue)
+            } else if errorMessage != nil {
+                statusBadge(text: "Build failed", systemImage: "xmark.octagon.fill", foreground: .red)
+            } else if lastRunDate == nil {
+                statusBadge(
+                    text: "Ready",
+                    systemImage: "sparkles",
+                    foreground: .secondary,
+                    background: Color(.tertiarySystemGroupedBackground)
+                )
+            } else {
+                statusBadge(text: "Last run OK", systemImage: "checkmark.circle.fill", foreground: .green)
+            }
+        }
+    }
+
+    private var editorMetrics: some View {
+        HStack(spacing: 10) {
+            statusBadge(
+                text: "\(codeLineCount) lines",
+                systemImage: "number",
+                foreground: Color.primary.opacity(0.8),
+                background: Color(.tertiarySystemGroupedBackground)
+            )
+            statusBadge(
+                text: "\(codeCharacterCount) chars",
+                systemImage: "textformat",
+                foreground: Color.primary.opacity(0.8),
+                background: Color(.tertiarySystemGroupedBackground)
+            )
+        }
+    }
+
+    private func statusBadge(
+        text: String,
+        systemImage: String,
+        foreground: Color,
+        background: Color? = nil
+    ) -> some View {
+        let fill = background ?? foreground.opacity(colorScheme == .dark ? 0.3 : 0.15)
+        return Label {
+            Text(text)
+                .font(.footnote.weight(.semibold))
+        } icon: {
+            Image(systemName: systemImage)
+        }
+        .padding(.horizontal, 12)
+        .padding(.vertical, 6)
+        .background(
+            Capsule()
+                .fill(fill)
+        )
+        .foregroundColor(foreground)
     }
 
     private var outputText: String {
@@ -684,6 +877,7 @@ struct CEditorView: View {
         errorLine = nil
         warnings.removeAll()
         duration = nil
+        selectedConsoleTab = .output
         consoleOutput = ""
 
         Task.detached(priority: .userInitiated) {
@@ -698,6 +892,9 @@ struct CEditorView: View {
                     warnings = execution.warnings
                     duration = execution.duration
                     lastLoadedCode = source
+                    if execution.warnings.isEmpty {
+                        selectedConsoleTab = .output
+                    }
                 case .failure(let error):
                     errorMessage = error.localizedDescription
                     // Extract line number when available
@@ -707,6 +904,7 @@ struct CEditorView: View {
                     default:
                         break
                     }
+                    selectedConsoleTab = .output
                 }
             }
         }
@@ -728,6 +926,19 @@ struct CEditorView: View {
         errorMessage = nil
         errorLine = nil
         warnings.removeAll()
+        selectedConsoleTab = .output
+    }
+
+    private var availableConsoleTabs: [ConsoleTab] {
+        warnings.isEmpty ? [.output] : [.output, .warnings]
+    }
+
+    private var codeLineCount: Int {
+        max(1, code.split(separator: "\n", omittingEmptySubsequences: false).count)
+    }
+
+    private var codeCharacterCount: Int {
+        code.count
     }
 }
 
