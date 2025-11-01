@@ -258,7 +258,10 @@ private struct CLexer {
     private(set) var lineNumber: Int = 1
 
     private static let keywords: Set<String> = [
-        "int", "return", "if", "else", "while", "for", "break", "continue"
+        // control/flow
+        "return", "if", "else", "while", "for", "break", "continue",
+        // primitive types (treated as 'int' by the interpreter)
+        "int", "long", "char", "void"
     ]
 
     private static let compoundSymbols: [String] = [
@@ -482,8 +485,21 @@ private struct CParser {
 
     mutating func parseProgram() throws -> [Statement] {
         _ = consumeNewlines()
-        guard match(keyword: "int") else {
-            throw CCompilerError.syntax(message: "Entry point must start with 'int main()'", lineNumber: currentLineNumber)
+        // Be tolerant: scan forward to find 'int|long|char void? main'
+        var scanIndex = index
+        while scanIndex < tokens.count {
+            let tok = tokens[scanIndex]
+            if case .keyword(let kw, _) = tok, ["int","long","char"].contains(kw) {
+                if scanIndex + 1 < tokens.count,
+                   case .identifier("main", _) = tokens[scanIndex + 1] {
+                    index = scanIndex
+                    break
+                }
+            }
+            scanIndex += 1
+        }
+        guard match(keyword: "int") || match(keyword: "long") || match(keyword: "char") else {
+            throw CCompilerError.syntax(message: "Program must define int main() (only a small C subset is supported)", lineNumber: currentLineNumber)
         }
         guard case .identifier("main", _)? = advance() else {
             throw CCompilerError.syntax(message: "Expected 'main' function", lineNumber: currentLineNumber)
@@ -529,9 +545,7 @@ private struct CParser {
             return .block(try parseBlock())
         }
 
-        if match(keyword: "int") {
-            return try parseDeclaration()
-        }
+        if let decl = try parseTypeDeclarationIfPresent() { return decl }
 
         if match(keyword: "return") {
             if match(symbol: ";") {
@@ -566,18 +580,32 @@ private struct CParser {
         return try parseAssignmentLikeStatement()
     }
 
-    private mutating func parseDeclaration(expectTerminator: Bool = true) throws -> Statement {
-        guard case .identifier(let name, _)? = advance() else {
-            throw CCompilerError.syntax(message: "Expected identifier after 'int'", lineNumber: currentLineNumber)
+    private mutating func parseTypeDeclarationIfPresent(expectTerminator: Bool = true) throws -> Statement? {
+        // Accept int/long/char as equivalent scalar type
+        let supportedTypes = ["int","long","char"]
+        var matchedType: String?
+        for t in supportedTypes {
+            if match(keyword: t) { matchedType = t; break }
         }
-        var initialValue: Expression?
-        if match(symbol: "=") {
-            initialValue = try parseExpression()
-        }
+        guard matchedType != nil else { return nil }
+
+        var decls: [Statement] = []
+        // At least one declarator
+        repeat {
+            guard case .identifier(let name, _)? = advance() else {
+                throw CCompilerError.syntax(message: "Expected identifier after type", lineNumber: currentLineNumber)
+            }
+            var initialValue: Expression?
+            if match(symbol: "=") {
+                initialValue = try parseExpression()
+            }
+            decls.append(.declaration(name: name, value: initialValue))
+        } while match(symbol: ",")
+
         if expectTerminator {
             try consume(symbol: ";")
         }
-        return .declaration(name: name, value: initialValue)
+        return decls.count == 1 ? decls[0] : .block(decls)
     }
 
     private mutating func parseAssignmentLikeStatement(expectTerminator: Bool = true) throws -> Statement {
@@ -671,9 +699,7 @@ private struct CParser {
         if check(symbol: ";") {
             return nil
         }
-        if match(keyword: "int") {
-            return try parseDeclaration(expectTerminator: false)
-        }
+        if let decl = try parseTypeDeclarationIfPresent(expectTerminator: false) { return decl }
         return try parseAssignmentLikeStatement(expectTerminator: false)
     }
 
