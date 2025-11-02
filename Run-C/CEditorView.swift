@@ -483,6 +483,21 @@ struct CEditorView: View {
     @State private var didAutoRun = false
     @State private var selectedSample: SampleProgram?
     @State private var isSidebarVisible: Bool = false
+    @State private var automationScenario: AutomationScenario?
+
+    private enum AutomationScenario: String {
+        case programs
+        case warnings
+    }
+
+    private static let warningShowcase = """
+    #include <stdio.h>
+
+    int main(void) {
+        printf("Counter: %d %d\\n", 42);
+        return 0;
+    }
+    """
 
     struct SampleProgram: Identifiable, Hashable {
         let id = UUID()
@@ -908,13 +923,18 @@ struct CEditorView: View {
         }
         .onAppear {
             let args = ProcessInfo.processInfo.arguments
+            if automationScenario == nil {
+                automationScenario = resolveScenario(from: args)
+            }
+
+            if let scenario = automationScenario {
+                applyPreset(for: scenario)
+            }
+
             if !didAutoRun && args.contains("--auto-run") {
-                if let first = samples.first {
-                    apply(first)
-                }
                 didAutoRun = true
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    runCode()
+                    performAutomationRun(for: automationScenario)
                 }
             }
         }
@@ -1284,6 +1304,57 @@ struct CEditorView: View {
                     selectedConsoleTab = .output
                 }
             }
+        }
+    }
+
+    private func resolveScenario(from arguments: [String]) -> AutomationScenario? {
+        guard let token = arguments.first(where: { $0.hasPrefix("--scenario=") }) else {
+            return nil
+        }
+        let components = token.split(separator: "=", maxSplits: 1, omittingEmptySubsequences: false)
+        guard components.count == 2 else { return nil }
+        return AutomationScenario(rawValue: String(components[1]))
+    }
+
+    private func applyPreset(for scenario: AutomationScenario) {
+        switch scenario {
+        case .programs:
+            if let first = samples.first {
+                selectedSample = first
+                apply(first)
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                isSidebarVisible = true
+            }
+        case .warnings:
+            let snippet = CEditorView.warningShowcase
+            code = snippet
+            lastLoadedCode = snippet
+            errorMessage = nil
+            errorLine = nil
+            warnings.removeAll()
+            selectedSample = nil
+            selectedConsoleTab = .warnings
+        }
+    }
+
+    private func performAutomationRun(for scenario: AutomationScenario?) {
+        switch scenario {
+        case .programs:
+            runCode()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                isSidebarVisible = true
+            }
+        case .warnings:
+            runCode()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.6) {
+                selectedConsoleTab = .warnings
+            }
+        case .none:
+            if let first = samples.first {
+                apply(first)
+            }
+            runCode()
         }
     }
 
