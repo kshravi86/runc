@@ -51,8 +51,8 @@ struct CSyntaxHighlighter {
             color: stringColor
         )
 
-        // Naive semicolon heuristic to help newcomers catch missing terminators.
-        markSuspiciousLines(in: attributedString, text: text)
+        // Keep the presentation clean: rely on compiler error highlighting
+        // instead of broad heuristics that can be visually noisy.
         return attributedString
     }
 
@@ -839,44 +839,29 @@ struct CEditorView: View {
     }
 
     var body: some View {
-        ZStack(alignment: .top) {
-            Color(.systemGroupedBackground)
-                .ignoresSafeArea()
-
-            HStack(alignment: .top, spacing: isWideLayout ? 20 : 12) {
-                if isWideLayout && isSidebarVisible {
-                    sidebar
-                        .transition(.move(edge: .leading).combined(with: .opacity))
-                }
-
-                VStack(spacing: isWideLayout ? 20 : 16) {
-                    header
-                    if isWideLayout {
-                        HStack(alignment: .top, spacing: 20) {
-                            editorSection
-                            consoleSection
-                        }
-                    } else {
-                        editorSection
-                        consoleSection
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .top)
-            }
-            .padding(.top, isWideLayout ? 24 : 12)
-            .padding(.horizontal, isWideLayout ? 24 : 12)
-            .padding(.bottom, 16)
+        VStack(spacing: isWideLayout ? 20 : 16) {
+            // Trimmed, clear layout: editor then console
+            editorSection
+            consoleSection
         }
-        // Navigation title is provided by parent (ContentView),
-        // avoid duplicate/overlapping titles.
+        .padding(.horizontal, isWideLayout ? 24 : 12)
+        .padding(.vertical, 16)
         .toolbar {
             ToolbarItemGroup(placement: .navigationBarLeading) {
-                Button {
-                    withAnimation { isSidebarVisible.toggle() }
+                Menu {
+                    Section("Beginner") {
+                        ForEach(beginnerSamples) { sample in
+                            Button(sample.title) { select(sample) }
+                        }
+                    }
+                    Section("More") {
+                        ForEach(otherSamples) { sample in
+                            Button(sample.title) { select(sample) }
+                        }
+                    }
                 } label: {
-                    Label(isSidebarVisible ? "Hide Programs" : "Show Programs", systemImage: "sidebar.left")
+                    Label("Examples", systemImage: "book")
                 }
-                .accessibilityLabel(isSidebarVisible ? "Hide programs sidebar" : "Show programs sidebar")
             }
             ToolbarItemGroup(placement: .navigationBarTrailing) {
                 Button("Reset") {
@@ -901,43 +886,7 @@ struct CEditorView: View {
                 .accessibilityLabel("Run C code")
             }
         }
-        .tint(.blue) // Set accent color for buttons
-        .background(Color(.systemGroupedBackground)) // Use system-adaptive background for a sleek look
-        .animation(.default, value: warnings)
-        .animation(.default, value: errorMessage)
-        .animation(.default, value: isSidebarVisible)
-        // On compact (iPhone), present the sidebar as a sheet instead of inline panel
-        .sheet(isPresented: Binding(
-            get: { !isWideLayout && isSidebarVisible },
-            set: { show in if !show { isSidebarVisible = false } }
-        )) {
-            NavigationStack {
-                ScrollView { sidebar.padding() }
-                    .navigationTitle("Programs")
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Close") { isSidebarVisible = false }
-                        }
-                    }
-            }
-        }
-        .onAppear {
-            let args = ProcessInfo.processInfo.arguments
-            if automationScenario == nil {
-                automationScenario = resolveScenario(from: args)
-            }
-
-            if let scenario = automationScenario {
-                applyPreset(for: scenario)
-            }
-
-            if !didAutoRun && args.contains("--auto-run") {
-                didAutoRun = true
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    performAutomationRun(for: automationScenario)
-                }
-            }
-        }
+        .tint(.blue)
     }
 
     private var sidebar: some View {

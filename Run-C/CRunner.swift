@@ -211,9 +211,17 @@ final class OfflineCCompiler {
             let statements = try parser.parseProgram()
             Log.debug("Parsed statements=\(statements.count) warnings=\(parser.warnings.count)", category: .compiler)
             var interpreter = CInterpreter()
+            // Execute program
             let stdout = try interpreter.execute(statements: statements)
             Log.debug("Interpreter warnings=\(interpreter.warnings.count) outputLength=\(stdout.count)", category: .compiler)
-            let warnings = parser.warnings + interpreter.warnings
+
+            // Intelligent hint: if no explicit return is found in main body, suggest adding one
+            var hints: [String] = []
+            if !hasExplicitReturn(in: statements) {
+                hints.append("Consider adding 'return 0;' at the end of main for clarity")
+            }
+
+            let warnings = parser.warnings + interpreter.warnings + hints
             let duration = Date().timeIntervalSince(startedAt)
             Log.info("Run finished success in \(String(format: "%.3f", duration))s (warnings=\(warnings.count))", category: .compiler)
             return .success(CExecutionResult(output: stdout, warnings: warnings, duration: duration))
@@ -224,6 +232,28 @@ final class OfflineCCompiler {
             Log.error("Run failed (internal): \(error.localizedDescription)", category: .compiler)
             return .failure(.internalError(message: error.localizedDescription))
         }
+    }
+
+    // Recursively search statements for any explicit return
+    private func hasExplicitReturn(in statements: [Statement]) -> Bool {
+        for stmt in statements {
+            switch stmt {
+            case .returnStatement:
+                return true
+            case .block(let inner):
+                if hasExplicitReturn(in: inner) { return true }
+            case .ifStatement(_, let thenBlock, let elseBlock):
+                if hasExplicitReturn(in: thenBlock) { return true }
+                if let elseBlock, hasExplicitReturn(in: elseBlock) { return true }
+            case .whileLoop(_, let body):
+                if hasExplicitReturn(in: body) { return true }
+            case .forLoop(_, _, _, let body):
+                if hasExplicitReturn(in: body) { return true }
+            default:
+                continue
+            }
+        }
+        return false
     }
 
     private func preprocess(source: String) -> String {
