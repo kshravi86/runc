@@ -67,7 +67,7 @@ jobs:
           # Reset appearance for any follow-up automation
           xcrun simctl ui "$UDID" appearance unspecified || true
 
-      - name: Normalize to 1284x2778 (Apple-accepted)
+      - name: Normalize to 1242x2688 (Apple-accepted)
         run: |
           set -euo pipefail
           mkdir -p sim_screenshots/final
@@ -75,12 +75,12 @@ jobs:
             shopt -s nullglob
             for f in sim_screenshots/*.png; do
               base=$(basename "${f%.*}")
-              out="sim_screenshots/final/${base}_1284x2778.png"
-              magick "$f" -resize "1284x2778^" -gravity center -crop 1284x2778+0+0 +repage "$out"
+              out="sim_screenshots/final/${base}_1242x2688.png"
+              magick "$f" -resize "1242x2688^" -gravity center -crop 1242x2688+0+0 +repage "$out"
               echo "Wrote $out"
             done
           else
-            echo "::warning ::ImageMagick not found; skipping normalization to 1284x2778"
+            echo "::warning ::ImageMagick not found; skipping normalization to 1242x2688"
           fi
 
       - name: Upload Screenshot Artifact
