@@ -1,0 +1,58 @@
+name: Build Fastlane Gem Bundle
+
+on:
+  workflow_dispatch:
+
+jobs:
+  bundle-fastlane:
+    name: Package fastlane gem for Monterey host
+    runs-on: macos-13
+    env:
+      TARGET_MACOS: "12.7.6"
+      TARGET_RUBY: "2.6.10"
+      GEM_INSTALL_DIR: "${{ github.workspace }}/fastlane_gem"
+      GEM_BIN_DIR: "${{ github.workspace }}/fastlane_gem/bin"
+    steps:
+      - name: Show runner info
+        run: |
+          echo "Runner macOS version (for reference):"
+          sw_vers
+          echo "Target host macOS version: ${TARGET_MACOS}"
+
+      - name: Set up Ruby ${{ env.TARGET_RUBY }}
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ env.TARGET_RUBY }}
+          bundler: none
+
+      - name: Verify Ruby version
+        run: |
+          current="$(ruby -e 'print RUBY_VERSION')"
+          if [ "$current" != "${TARGET_RUBY}" ]; then
+            echo "::error ::Ruby version $current does not match TARGET_RUBY=${TARGET_RUBY}"
+            exit 1
+          fi
+          gem env
+
+      - name: Install fastlane gem into portable directory
+        run: |
+          rm -rf "${GEM_INSTALL_DIR}"
+          mkdir -p "${GEM_BIN_DIR}"
+          gem install fastlane \
+            --no-document \
+            --install-dir "${GEM_INSTALL_DIR}" \
+            --bindir "${GEM_BIN_DIR}"
+          ls -R "${GEM_INSTALL_DIR}"
+
+      - name: Package artifact
+        run: |
+          cd "${GEM_INSTALL_DIR}/.."
+          tar -czf fastlane-gem-${TARGET_RUBY}.tar.gz fastlane_gem
+
+      - name: Upload fastlane gem bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: fastlane-gem-${{ env.TARGET_RUBY }}
+          path: "${{ github.workspace }}/fastlane-gem-${{ env.TARGET_RUBY }}.tar.gz"
+          if-no-files-found: error
+
