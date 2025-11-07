@@ -16,7 +16,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p bottles
-          FORMULAS=(openssl@3 readline icu4c sqlite gmp mpdecimal pkg-config libffi)
+          FORMULAS=(readline icu4c sqlite gmp mpdecimal pkg-config libffi)
           for name in "${FORMULAS[@]}"; do
             if brew list --versions "$name" >/dev/null; then
               HOMEBREW_NO_INSTALLED_DEPENDENTS_CHECK=1 \
