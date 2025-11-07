@@ -1,0 +1,43 @@
+name: Mirror Homebrew Bottles
+on:
+  workflow_dispatch:
+    inputs:
+      formulas:
+        description: "Space-separated list of formulas to mirror (e.g., openssl@3 readline icu4c sqlite)"
+        required: true
+        default: "openssl@3 readline icu4c sqlite gmp mpdecimal pkg-config libffi"
+
+jobs:
+  fetch-bottles:
+    # Use Intel runner so you mirror x86_64 bottles (macos-13 is Intel today; update if needed).
+    runs-on: macos-13
+    steps:
+      - name: Show Homebrew info
+        run: |
+          brew config
+          brew update-reset
+
+      - name: Fetch bottles for each formula
+        run: |
+          set -euo pipefail
+          mkdir -p bottles
+          for f in ${{ github.event.inputs.formulas }}; do
+            # Grab official bottles (no building)
+            brew fetch --force --bottle "$f"
+          done
+          # Copy everything fetched to a clean folder for upload
+          CACHE_DIR="$(brew --cache)"
+          find "$CACHE_DIR" -name "*.bottle.tar.gz" -maxdepth 1 -print -exec cp {} bottles/ \;
+          # Keep JSON checksums if present
+          find "$CACHE_DIR" -name "*.bottle.json" -maxdepth 1 -print -exec cp {} bottles/ \;
+
+      - name: List bottled files
+        run: ls -lh bottles
+
+      - name: Upload bottles as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bottles
+          path: bottles
+          if-no-files-found: error
+
