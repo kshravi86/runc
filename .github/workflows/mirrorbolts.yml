@@ -17,8 +17,8 @@ jobs:
           set -euo pipefail
           mkdir -p bottles
           FORMULAS=(openssl@3 readline icu4c sqlite gmp mpdecimal pkg-config libffi)
-          # Grab official bottles (no building)
-          brew fetch --force --bottle "${FORMULAS[@]}"
+          # Grab Sonoma bottles (works even when runner is Ventura/Tier-3)
+          brew fetch --force --bottle --bottle-tag=sonoma "${FORMULAS[@]}"
           # Copy everything fetched to a clean folder for upload
           CACHE_DIR="$(brew --cache)"
           find "$CACHE_DIR" -name "*.bottle.tar.gz" -maxdepth 1 -print -exec cp {} bottles/ \;
