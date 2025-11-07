@@ -20,7 +20,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p bottles
-          for f in ${{ env.FORMULAS }}; do
+          for f in $FORMULAS; do
             # Grab official bottles (no building)
             brew fetch --force --bottle "$f"
           done
