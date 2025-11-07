@@ -17,23 +17,19 @@ jobs:
           set -euo pipefail
           mkdir -p bottles
           FORMULAS=(openssl@3 readline icu4c sqlite gmp mpdecimal pkg-config libffi)
-          for formula_hdr in "${FORMULAS[@]}"; do
-            formula="${formula_hdr%@*}"
-            version_suffix="${formula_hdr#*@}"
-            full_name="$formula"
-            [[ "$formula_hdr" == *"@"* ]] && full_name="$formula@$version_suffix"
-            # Uninstall only if safe; otherwise reinstall with ignore-dependencies.
-            if brew list --versions "$full_name" >/dev/null; then
-              if [[ "$full_name" == openssl@3 ]]; then
-                brew reinstall --build-bottle --ignore-dependencies "$full_name"
+          for formula in "${FORMULAS[@]}"; do
+            name="$formula"
+            if brew list --versions "$name" >/dev/null; then
+              if [[ "$name" == openssl@3 ]]; then
+                brew install --build-bottle "$name"
               else
-                brew uninstall --force "$full_name"
-                brew install --build-bottle "$full_name"
+                brew uninstall --force "$name"
+                brew install --build-bottle "$name"
               fi
             else
-              brew install --build-bottle "$full_name"
+              brew install --build-bottle "$name"
             fi
-            brew bottle --force-core-tap "$full_name"
+            brew bottle --force-core-tap "$name"
             # Move resulting bottle(s) into our bottles directory.
             mv ./*.bottle*.tar.gz bottles/ || true
             mv ./*.bottle*.json bottles/ || true
