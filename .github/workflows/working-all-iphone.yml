@@ -61,6 +61,15 @@ jobs:
           sleep 3
           xcrun simctl io "$UDID" screenshot "sim_screenshots/02_after_run.png"
 
+      - name: Ensure ImageMagick is installed
+        run: |
+          set -euo pipefail
+          if ! command -v magick >/dev/null 2>&1; then
+            brew update
+            brew install imagemagick
+          fi
+          magick -version
+
       - name: Normalize to 1284x2778 (Apple-accepted)
         run: |
           set -euo pipefail
@@ -75,6 +84,35 @@ jobs:
             done
           else
             echo "::warning ::ImageMagick not found; skipping normalization to 1284x2778"
+          fi
+
+      - name: Validate final image dimensions (require 1284x2778)
+        run: |
+          set -euo pipefail
+          if ! command -v magick >/dev/null 2>&1; then
+            echo "::error ::ImageMagick is required for validation"
+            exit 1
+          fi
+          shopt -s nullglob
+          any=0
+          failed=0
+          for f in sim_screenshots/final/*.png; do
+            any=1
+            dims=$(magick identify -format "%w %h" "$f" || true)
+            w=$(echo "$dims" | awk '{print $1}')
+            h=$(echo "$dims" | awk '{print $2}')
+            echo "Validate: $f -> ${w}x${h}"
+            if [ "$w" != "1284" ] || [ "$h" != "2778" ]; then
+              echo "::error file=$f::Expected 1284x2778 but got ${w}x${h}"
+              failed=1
+            fi
+          done
+          if [ "$any" = "0" ]; then
+            echo "::error ::No files found in sim_screenshots/final to validate"
+            exit 1
+          fi
+          if [ "$failed" = "1" ]; then
+            exit 1
           fi
 
       - name: Upload Screenshot Artifact
