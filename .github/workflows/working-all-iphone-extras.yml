@@ -6,7 +6,7 @@ on:
       device:
         description: "Simulator device name (iPhone)"
         required: false
-        default: "iPhone 14 Pro Max"
+        default: "iPhone 15 Pro Max"
 
 jobs:
   simshot:
@@ -24,8 +24,10 @@ jobs:
         run: |
           set -euo pipefail
           DEVICE_NAME='${{ inputs.device }}'
-          DERIVED_DATA="$RUNNER_TEMP/DerivedData"
-          SPM_CACHE="$RUNNER_TEMP/SPM"
+          BUILD_CACHE="$PWD/.ci-build"
+          DERIVED_DATA="$BUILD_CACHE/DerivedData"
+          SPM_CACHE="$BUILD_CACHE/SPM"
+          rm -rf "$DERIVED_DATA"
           mkdir -p "$DERIVED_DATA" "$SPM_CACHE"
           xcodebuild -resolvePackageDependencies -project Run-C.xcodeproj -scheme "Run-C" -clonedSourcePackagesDirPath "$SPM_CACHE"
           xcodebuild -project Run-C.xcodeproj \
@@ -41,14 +43,15 @@ jobs:
           SEARCH_BASE="$DERIVED_DATA/Build/Products"
           if [ -d "$SEARCH_BASE" ]; then
             APP_DIR=$(find "$SEARCH_BASE" -type d -path "*/-iphonesimulator/*.app" -print -quit || true)
-          fi
-          if [ -z "$APP_DIR" ]; then
-            DEFAULT_DERIVED="$HOME/Library/Developer/Xcode/DerivedData"
-            if [ -d "$DEFAULT_DERIVED" ]; then
-              APP_DIR=$(find "$DEFAULT_DERIVED" -type d -path "*/Build/Products/*-iphonesimulator/*.app" -print -quit || true)
+            if [ -z "$APP_DIR" ]; then
+              APP_DIR=$(find "$SEARCH_BASE" -type d -path "*/Debug/*.app" -print -quit || true)
             fi
           fi
-          if [ -z "$APP_DIR" ]; then echo "::error::No simulator .app found"; exit 1; fi
+          if [ -z "$APP_DIR" ]; then
+            echo "::error::No simulator .app found under $SEARCH_BASE"
+            find "$DERIVED_DATA" -maxdepth 5 -type d -name "*.app" || true
+            exit 1
+          fi
           echo "Found simulator build at $APP_DIR"
           echo "APP_DIR=$APP_DIR" >> $GITHUB_ENV
 
