@@ -42,7 +42,7 @@ jobs:
           APP_DIR=""
           SEARCH_BASE="$DERIVED_DATA/Build/Products"
           if [ -d "$SEARCH_BASE" ]; then
-            APP_DIR=$(find "$SEARCH_BASE" -type d -path "*/-iphonesimulator/*.app" -print -quit || true)
+            APP_DIR=$(find "$SEARCH_BASE" -type d -path "*-iphonesimulator/*.app" -print -quit || true)
             if [ -z "$APP_DIR" ]; then
               APP_DIR=$(find "$SEARCH_BASE" -type d -path "*/Debug/*.app" -print -quit || true)
             fi
