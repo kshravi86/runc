@@ -24,18 +24,32 @@ jobs:
         run: |
           set -euo pipefail
           DEVICE_NAME='${{ inputs.device }}'
-          xcodebuild -resolvePackageDependencies -project Run-C.xcodeproj -scheme "Run-C" -clonedSourcePackagesDirPath "$RUNNER_TEMP/SPM"
+          DERIVED_DATA="$RUNNER_TEMP/DerivedData"
+          SPM_CACHE="$RUNNER_TEMP/SPM"
+          mkdir -p "$DERIVED_DATA" "$SPM_CACHE"
+          xcodebuild -resolvePackageDependencies -project Run-C.xcodeproj -scheme "Run-C" -clonedSourcePackagesDirPath "$SPM_CACHE"
           xcodebuild -project Run-C.xcodeproj \
             -scheme "Run-C" \
             -configuration Debug \
             -destination "platform=iOS Simulator,name=${DEVICE_NAME},OS=latest" \
-            -derivedDataPath "$RUNNER_TEMP/DerivedData" \
+            -derivedDataPath "$DERIVED_DATA" \
             CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO \
             ONLY_ACTIVE_ARCH=YES ARCHS=arm64 EXCLUDED_ARCHS=arm64e \
             IPHONEOS_DEPLOYMENT_TARGET=17.0 \
             build | xcpretty
-          APP_DIR=$(find "$RUNNER_TEMP/DerivedData/Build/Products/Debug-iphonesimulator" -type d -name "*.app" -maxdepth 1 | head -n1 || true)
+          APP_DIR=""
+          SEARCH_BASE="$DERIVED_DATA/Build/Products"
+          if [ -d "$SEARCH_BASE" ]; then
+            APP_DIR=$(find "$SEARCH_BASE" -type d -path "*/-iphonesimulator/*.app" -print -quit || true)
+          fi
+          if [ -z "$APP_DIR" ]; then
+            DEFAULT_DERIVED="$HOME/Library/Developer/Xcode/DerivedData"
+            if [ -d "$DEFAULT_DERIVED" ]; then
+              APP_DIR=$(find "$DEFAULT_DERIVED" -type d -path "*/Build/Products/*-iphonesimulator/*.app" -print -quit || true)
+            fi
+          fi
           if [ -z "$APP_DIR" ]; then echo "::error::No simulator .app found"; exit 1; fi
+          echo "Found simulator build at $APP_DIR"
           echo "APP_DIR=$APP_DIR" >> $GITHUB_ENV
 
       - name: Take simulator screenshots (Run-C)
